@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import './database_helper.dart';
 
 class TaskCardWidget extends StatelessWidget {
   final String title;
@@ -24,7 +23,7 @@ class TaskCardWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.folder),
+              Icon(Icons.topic),
               SizedBox(width: 20),
               Text(
                 title == '' ? "---": title,
@@ -65,9 +64,7 @@ class TodoWidget extends StatefulWidget {
   _TodoWidgetState createState() => _TodoWidgetState();
 }
 
-class _TodoWidgetState extends State<TodoWidget> with TickerProviderStateMixin{
-  DatabaseHelper _dbHelper = new DatabaseHelper();
-
+class _TodoWidgetState extends State<TodoWidget>{
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -75,12 +72,12 @@ class _TodoWidgetState extends State<TodoWidget> with TickerProviderStateMixin{
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Color(0xff272636),
+        color: widget.isDone ? Color(0xff2c2b3d) : Color(0xff272636),
       ),
       child: ListTile(
         leading: Icon(Icons.check),
         title: Text(
-          widget.text ?? "(Unnamed Todo)",
+          widget.text ?? "---",
           style: TextStyle(
             color: !widget.isDone ? Colors.white : Color(0xFF86829D),
             fontSize: 16.0,
@@ -104,32 +101,3 @@ class NoGlowBehaviour extends ScrollBehavior {
     return child;
   }
 }
-/**Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.0,
-        vertical: 8.0,
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 20.0,
-            height: 20.0,
-            margin: EdgeInsets.only(
-              right: 12.0,
-            ),
-            child: Icon(Icons.check_circle_outline)
-          ),
-          Flexible(
-            child: Text(
-              widget.text ?? "(Unnamed Todo)",
-              style: TextStyle(
-                color: !widget.isDone ? Colors.white : Color(0xFF86829D),
-                fontSize: 16.0,
-                fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
-                decoration: widget.isDone ? TextDecoration.lineThrough : null
-              ),
-            ),
-          ),
-        ],
-      ),
-    ) */

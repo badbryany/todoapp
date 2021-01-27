@@ -15,11 +15,13 @@ class Taskpage extends StatefulWidget {
   _TaskpageState createState() => _TaskpageState();
 }
 
-class _TaskpageState extends State<Taskpage> {
+class _TaskpageState extends State<Taskpage>{
   DatabaseHelper _dbHelper = DatabaseHelper();
   final key = GlobalKey<AnimatedListState>();
 
-  var _items;
+  String todoTitle = '';
+  String todoDescription = '';
+
   int _taskId = 0;
   String _taskTitle = "";
   String _taskDescription = "";
@@ -51,8 +53,9 @@ class _TaskpageState extends State<Taskpage> {
 
   @override
   Widget build(BuildContext context) {
+    List<Icon> toDoSettings = [Icon(Icons.subject, size: 30, color: Color(0xffbf96fa)), Icon(Icons.event_available, color: Color(0xffbf96fa), size: 30), Icon(Icons.tune, color: Color(0xffbf96fa), size: 30)];
     return Scaffold(
-      body: SafeArea(
+      body: Container(
         child: Container(
           color: Color(0xff1f1d2b),
           child: Stack(
@@ -196,37 +199,29 @@ class _TaskpageState extends State<Taskpage> {
                   )
                 )
               ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                //width: double.infinity, //MediaQuery.of(context).size.width
-                child: Visibility(
-                  visible: _addToDo,
+              Visibility(
+                visible: _addToDo,
+                child: Positioned(
+                  bottom: 0,
+                  left: 0,
+                  width: MediaQuery.of(context).size.width,
+                  height: 180,
                   child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24),
+                    //margin: EdgeInsets.symmetric(horizontal: 24),
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
-                      //color: Color(0xff272636),
+                      color: Color(0xff272636),
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
                     ),
-                    child: Row(
+                    child: Column(
                       children: [
                         Container(
-                          width: 20,
-                          height: 20,
-                          margin: EdgeInsets.only(right: 12.0),
-                          decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(
-                                  color: Color(0xFF86829D), width: 1.5)),
-                          child: SizedBox()
-                        ),
-                        Expanded(
+                          margin: EdgeInsets.all(10),
                           child: TextField(
                             autofocus: true,
                             focusNode: _todoFocus,
-                            controller: TextEditingController()..text = "",
+                            controller: TextEditingController()
+                              ..text = '',
                             onSubmitted: (value) async {
                               // Check if the field is not empty
                               if (value != "") {
@@ -238,24 +233,75 @@ class _TaskpageState extends State<Taskpage> {
                                       taskId: _taskId,
                                   );
                                   await _dbHelper.insertTodo(_newTodo);
-                                  setState(() {});
-                                  _todoFocus.requestFocus();
+                                  setState(() {
+                                    todoTitle = '';
+                                    _addToDo = false;
+                                  });
+                                  //_todoFocus.requestFocus();
                                 } else {
                                   print("Task doesn't exist");
                                 }
                               }
                             },
+                            onChanged: (value) => todoTitle = value,
                             decoration: InputDecoration(
                               hintText: "Neue Aufgabe...",
                               border: InputBorder.none,
                             ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 40),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  //{var color = '0xffffc548';},
+                                  ...toDoSettings.map((e) => Container(
+                                    margin: EdgeInsets.all(8),
+                                    padding: EdgeInsets.all(7),
+                                    child: e,
+                                  )),
+                                ],
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  String value = todoTitle;
+                                  // Check if the field is not empty
+                                  if (value != '') {
+                                    if (_taskId != 0) {
+                                      DatabaseHelper _dbHelper = DatabaseHelper();
+                                      Todo _newTodo = Todo(
+                                        title: value,
+                                        isDone: 0,
+                                          taskId: _taskId,
+                                      );
+                                      await _dbHelper.insertTodo(_newTodo);
+                                      setState(() {
+                                        todoTitle = '';
+                                        _addToDo = false;
+                                      });
+                                      //_todoFocus.requestFocus();
+                                    } else {
+                                      print('Task doesn\'t exist');
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(right: 20),
+                                  child: Text('Speichern', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                                ),
+                              )
+                            ],
                           ),
                         )
                       ],
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

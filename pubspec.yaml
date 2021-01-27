@@ -28,3 +28,4 @@ flutter:
         - asset: ./assets/fonts/ProductSans-Light.ttf
   assets:
     - assets/icons/
+    - assets/imgs/

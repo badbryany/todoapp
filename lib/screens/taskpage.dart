@@ -205,12 +205,10 @@ class _TaskpageState extends State<Taskpage>{
                   bottom: 0,
                   left: 0,
                   width: MediaQuery.of(context).size.width,
-                  height: 180,
+                  height: 170,
                   child: Container(
-                    //margin: EdgeInsets.symmetric(horizontal: 24),
-                    padding: EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
-                      color: Color(0xff272636),
+                      color: Color(0xff2e2e31),
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
                     ),
                     child: Column(

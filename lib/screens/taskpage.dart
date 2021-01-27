@@ -256,6 +256,7 @@ class _TaskpageState extends State<Taskpage>{
                                   setState(() {
                                     todoTitle = '';
                                     _addToDo = false;
+                                    blure = SizedBox();
                                   });
                                   //_todoFocus.requestFocus();
                                 } else {

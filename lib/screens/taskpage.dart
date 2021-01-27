@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -21,6 +23,8 @@ class _TaskpageState extends State<Taskpage>{
 
   String todoTitle = '';
   String todoDescription = '';
+
+  Widget blure = SizedBox();
 
   int _taskId = 0;
   String _taskTitle = "";
@@ -195,10 +199,28 @@ class _TaskpageState extends State<Taskpage>{
                   padding: EdgeInsets.all(10),
                   child: IconButton(
                     icon: Icon(Icons.add),
-                    onPressed: () => setState(() {_addToDo = !_addToDo;}),
+                    onPressed: () => setState(() {
+                      _addToDo = !_addToDo;
+                      blure = InkWell(
+                        onTap: () => setState(() {blure = SizedBox(); _addToDo = false;}),
+                        child: Positioned.fill(
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: 1,
+                            sigmaY: 1,
+                          ),
+                          child: Container(
+                            color: Colors.black.withOpacity(0),
+                          ),
+                        )
+                      ),
+                      );
+                    }),
                   )
                 )
               ),
+              blure,
+              //add ToDo
               Visibility(
                 visible: _addToDo,
                 child: Positioned(
@@ -280,6 +302,7 @@ class _TaskpageState extends State<Taskpage>{
                                       setState(() {
                                         todoTitle = '';
                                         _addToDo = false;
+                                        blure = SizedBox();
                                       });
                                       //_todoFocus.requestFocus();
                                     } else {

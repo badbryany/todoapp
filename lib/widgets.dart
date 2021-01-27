@@ -1,10 +1,48 @@
 import 'package:flutter/material.dart';
 
-class TaskCardWidget extends StatelessWidget {
+import './models/todo.dart';
+import './database_helper.dart';
+class TaskCardWidget extends StatefulWidget {
   final String title;
   final String desc;
+  final int taskId;
 
-  TaskCardWidget({this.title, this.desc});
+  TaskCardWidget({this.title, this.desc, this.taskId});
+
+  @override
+  _TaskCardWidgetState createState() => _TaskCardWidgetState();
+}
+
+class _TaskCardWidgetState extends State<TaskCardWidget> {
+  DatabaseHelper _dbHelper = new DatabaseHelper();
+
+  Future<String> getToDos(id) async {
+    List<Todo> toDos;
+    int done = 0;
+    await _dbHelper.getTodo(id).then((value) => toDos = value);
+
+    if (toDos.length == 0) {
+      return '0/0';
+    } else {
+      for (var i = 0; i < toDos.length; i++) {
+        if (toDos[i].isDone == 1) {
+          done += 1;
+        }
+      }
+      return '$done/${toDos.length}';
+    }
+  }
+
+  Color whichColor(String doneTasks) {
+    if (doneTasks == '0/0') {
+      return Color(0xfff6ca6c);
+    }
+    if (doneTasks.split('/')[0] == doneTasks.split('/')[1]) {
+      return Colors.green[400];
+    }
+    return Color(0xaa53e4df);
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +64,7 @@ class TaskCardWidget extends StatelessWidget {
               Icon(Icons.topic),
               SizedBox(width: 20),
               Text(
-                title == '' ? "---": title,
+                widget.title == '' ? "---": widget.title,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -39,14 +77,32 @@ class TaskCardWidget extends StatelessWidget {
               top: 5,
             ),
             child: Text(
-              (desc == '' || desc == null) ? "---" : desc,
+              (widget.desc == '' || widget.desc == null) ? "---" : widget.desc,
               style: TextStyle(
                 fontSize: 14,
                 color: Color(0xFF86829D),
                 height: 1.5,
               ),
             ),
-          )
+          ),
+          FutureBuilder(
+            future: getToDos(this.widget.taskId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Container(
+                  padding: EdgeInsets.only(left: 11, right: 11, top: 7, bottom: 7),
+                  margin: EdgeInsets.only(top: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: whichColor(snapshot.data.toString())
+                  ),
+                  child: Text(snapshot.data.toString(), style: TextStyle(fontWeight: FontWeight.bold),)
+                );
+              } else {
+                return Text('0/0', style: TextStyle(fontWeight: FontWeight.bold));
+              }
+            },
+          ),
         ],
       ),
     );

@@ -80,6 +80,7 @@ class _HomepageState extends State<Homepage> {
                                   });
                                 },
                                 child: TaskCardWidget(
+                                  taskId: e.id,
                                   title: e.title,
                                   desc: e.description,
                                 ),

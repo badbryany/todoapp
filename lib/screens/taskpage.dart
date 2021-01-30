@@ -335,6 +335,7 @@ class _TaskpageState extends State<Taskpage>{
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(right: 20),
+                                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                                   child: Text('Speichern', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
                                 ),
                               )

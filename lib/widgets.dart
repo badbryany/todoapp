@@ -142,7 +142,7 @@ class _TodoWidgetState extends State<TodoWidget>{
             decoration: widget.isDone ? TextDecoration.lineThrough : null
           ),
         ),
-        subtitle: Text(widget.description ?? ''),
+        subtitle: widget.description != null ? Text(widget.description) : null,
         trailing: IconButton(
           icon: Icon(Icons.delete),
           onPressed: widget.removeToDo,

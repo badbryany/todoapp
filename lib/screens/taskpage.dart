@@ -187,7 +187,6 @@ class _TaskpageState extends State<Taskpage>{
                         child: ListView.builder(
                           itemCount: snapshot.data.length,
                           itemBuilder: (context, index) {
-                            //print(snapshot.data[index].toMap());
                             return GestureDetector(
                               onTap: () async {
                                 if(snapshot.data[index].isDone == 0){
@@ -224,7 +223,7 @@ class _TaskpageState extends State<Taskpage>{
                     onPressed: () => setState(() {
                       _addToDo = !_addToDo;
                       blure = InkWell(
-                        onTap: () => setState(() {blure = SizedBox(); _addToDo = false;}),
+                        onTap: () => setState(() {blure = SizedBox(); _addToDo = false; _description = false;}),
                         child: Positioned.fill(
                         child: BackdropFilter(
                           filter: ImageFilter.blur(
@@ -278,6 +277,8 @@ class _TaskpageState extends State<Taskpage>{
                                   await _dbHelper.insertTodo(_newTodo);
                                   setState(() {
                                     todoTitle = '';
+                                    todoDescription = '';
+                                    _description = false;
                                     _addToDo = false;
                                     blure = SizedBox();
                                   });
@@ -346,6 +347,7 @@ class _TaskpageState extends State<Taskpage>{
                                       await _dbHelper.insertTodo(_newTodo);
                                       setState(() {
                                         todoTitle = '';
+                                        todoDescription = '';
                                         _addToDo = false;
                                         _description = false;
                                         blure = SizedBox();

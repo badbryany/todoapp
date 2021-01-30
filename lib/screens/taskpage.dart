@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../database_helper.dart';
@@ -29,6 +28,7 @@ class _TaskpageState extends State<Taskpage>{
   int _taskId = 0;
   String _taskTitle = "";
   String _taskDescription = "";
+  DateTime _dateTime;
 
   FocusNode _titleFocus;
   FocusNode _descriptionFocus;
@@ -36,6 +36,8 @@ class _TaskpageState extends State<Taskpage>{
 
   bool _contentVisile = false;
   bool _addToDo = false;
+  double _addHeight = 150;
+  bool _description = false;
 
   @override
   void initState() {
@@ -55,9 +57,27 @@ class _TaskpageState extends State<Taskpage>{
     super.initState();
   }
 
+  Future<DateTime> pickDate() async {
+    DateTime _dateTime = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(3000),
+    );
+    var _time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1),
+    );
+    print('_time: $_time; _dateTime: $_dateTime;');
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Icon> toDoSettings = [Icon(Icons.subject, size: 30, color: Color(0xffbf96fa)), Icon(Icons.event_available, color: Color(0xffbf96fa), size: 30), Icon(Icons.tune, color: Color(0xffbf96fa), size: 30)];
+    List<dynamic> toDoSettings = [
+      {'icon': Icon(Icons.subject, size: 30, color: Color(0xffbf96fa)), 'onTap': () => setState(() {_description = true; _addHeight = 200;})},
+      {'icon': Icon(Icons.alarm, color: Color(0xffbf96fa), size: 30), 'onTap': pickDate},
+      //{'icon': Icon(Icons.tune, color: Color(0xffbf96fa), size: 30), 'onTap': () {print('foo');}},
+    ];
     return Scaffold(
       body: Container(
         child: Container(
@@ -167,6 +187,7 @@ class _TaskpageState extends State<Taskpage>{
                         child: ListView.builder(
                           itemCount: snapshot.data.length,
                           itemBuilder: (context, index) {
+                            //print(snapshot.data[index].toMap());
                             return GestureDetector(
                               onTap: () async {
                                 if(snapshot.data[index].isDone == 0){
@@ -178,6 +199,7 @@ class _TaskpageState extends State<Taskpage>{
                               },
                               child: TodoWidget(
                                 text: snapshot.data[index].title,
+                                description: snapshot.data[index].description,
                                 isDone: snapshot.data[index].isDone == 0 ? false : true,
                                 removeToDo: () {
                                   _dbHelper.deleteToDo(snapshot.data[index].id);
@@ -227,7 +249,7 @@ class _TaskpageState extends State<Taskpage>{
                   bottom: 0,
                   left: 0,
                   width: MediaQuery.of(context).size.width,
-                  height: 170,
+                  height: _addHeight,
                   child: Container(
                     decoration: BoxDecoration(
                       color: Color(0xff2e2e31),
@@ -236,7 +258,7 @@ class _TaskpageState extends State<Taskpage>{
                     child: Column(
                       children: [
                         Container(
-                          margin: EdgeInsets.all(10),
+                          margin: EdgeInsets.only(left: 10),
                           child: TextField(
                             autofocus: true,
                             focusNode: _todoFocus,
@@ -250,7 +272,8 @@ class _TaskpageState extends State<Taskpage>{
                                   Todo _newTodo = Todo(
                                     title: value,
                                     isDone: 0,
-                                      taskId: _taskId,
+                                    taskId: _taskId,
+                                    description: todoDescription
                                   );
                                   await _dbHelper.insertTodo(_newTodo);
                                   setState(() {
@@ -271,6 +294,23 @@ class _TaskpageState extends State<Taskpage>{
                             ),
                           ),
                         ),
+                        Visibility(
+                          visible: _description,
+                          child: Container(
+                            margin: EdgeInsets.only(left: 10),
+                            child: TextField(
+                              focusNode: _todoFocus,
+                              controller: TextEditingController()
+                                ..text = '',
+                              onChanged: (value) => todoDescription = value,
+                              decoration: InputDecoration(
+                                hintText: 'Details hinzufügen...',
+                                hintStyle: TextStyle(fontSize: 14),
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ),
                         Container(
                           margin: EdgeInsets.only(bottom: 40),
                           child: Row(
@@ -280,10 +320,13 @@ class _TaskpageState extends State<Taskpage>{
                               Row(
                                 children: [
                                   //{var color = '0xffffc548';},
-                                  ...toDoSettings.map((e) => Container(
-                                    margin: EdgeInsets.all(8),
-                                    padding: EdgeInsets.all(7),
-                                    child: e,
+                                  ...toDoSettings.map((e) => InkWell(
+                                    onTap: e['onTap'],
+                                    child: Container(
+                                      margin: EdgeInsets.all(8),
+                                      padding: EdgeInsets.all(7),
+                                      child: e['icon'],
+                                    ),
                                   )),
                                 ],
                               ),
@@ -297,12 +340,14 @@ class _TaskpageState extends State<Taskpage>{
                                       Todo _newTodo = Todo(
                                         title: value,
                                         isDone: 0,
-                                          taskId: _taskId,
+                                        taskId: _taskId,
+                                        description: todoDescription,
                                       );
                                       await _dbHelper.insertTodo(_newTodo);
                                       setState(() {
                                         todoTitle = '';
                                         _addToDo = false;
+                                        _description = false;
                                         blure = SizedBox();
                                       });
                                       //_todoFocus.requestFocus();

@@ -111,10 +111,11 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
 
 class TodoWidget extends StatefulWidget {
   final String text;
+  final String description;
   final bool isDone;
   final Function removeToDo;
 
-  TodoWidget({this.text, @required this.isDone, @required this.removeToDo});
+  TodoWidget({this.text, @required this.isDone, @required this.removeToDo, this.description});
 
   @override
   _TodoWidgetState createState() => _TodoWidgetState();
@@ -141,6 +142,7 @@ class _TodoWidgetState extends State<TodoWidget>{
             decoration: widget.isDone ? TextDecoration.lineThrough : null
           ),
         ),
+        subtitle: Text(widget.description ?? ''),
         trailing: IconButton(
           icon: Icon(Icons.delete),
           onPressed: widget.removeToDo,

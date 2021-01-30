@@ -74,7 +74,7 @@ class _TaskpageState extends State<Taskpage>{
   @override
   Widget build(BuildContext context) {
     List<dynamic> toDoSettings = [
-      {'icon': Icon(Icons.subject, size: 30, color: Color(0xffbf96fa)), 'onTap': () => setState(() {_description = true; _addHeight = 200;})},
+      {'icon': Icon(Icons.subject, size: 30, color: Color(0xffbf96fa)), 'onTap': () => setState(() {_description = !_description; _addHeight = 200;})},
       {'icon': Icon(Icons.alarm, color: Color(0xffbf96fa), size: 30), 'onTap': pickDate},
       //{'icon': Icon(Icons.tune, color: Color(0xffbf96fa), size: 30), 'onTap': () {print('foo');}},
     ];
@@ -258,36 +258,11 @@ class _TaskpageState extends State<Taskpage>{
                       children: [
                         Container(
                           margin: EdgeInsets.only(left: 10),
-                          child: TextField(
+                          child: TextFormField(
                             autofocus: true,
+                            initialValue: todoTitle,
                             focusNode: _todoFocus,
-                            controller: TextEditingController()
-                              ..text = '',
-                            onSubmitted: (value) async {
-                              // Check if the field is not empty
-                              if (value != "") {
-                                if (_taskId != 0) {
-                                  DatabaseHelper _dbHelper = DatabaseHelper();
-                                  Todo _newTodo = Todo(
-                                    title: value,
-                                    isDone: 0,
-                                    taskId: _taskId,
-                                    description: todoDescription
-                                  );
-                                  await _dbHelper.insertTodo(_newTodo);
-                                  setState(() {
-                                    todoTitle = '';
-                                    todoDescription = '';
-                                    _description = false;
-                                    _addToDo = false;
-                                    blure = SizedBox();
-                                  });
-                                  //_todoFocus.requestFocus();
-                                } else {
-                                  print("Task doesn't exist");
-                                }
-                              }
-                            },
+                            //controller: TextEditingController()..text = '',
                             onChanged: (value) => todoTitle = value,
                             decoration: InputDecoration(
                               hintText: "Neue Aufgabe...",
@@ -299,10 +274,10 @@ class _TaskpageState extends State<Taskpage>{
                           visible: _description,
                           child: Container(
                             margin: EdgeInsets.only(left: 10),
-                            child: TextField(
+                            child: TextFormField(
                               focusNode: _todoFocus,
-                              controller: TextEditingController()
-                                ..text = '',
+                              initialValue: todoDescription,
+                              //controller: TextEditingController()..text = '',
                               onChanged: (value) => todoDescription = value,
                               decoration: InputDecoration(
                                 hintText: 'Details hinzufügen...',

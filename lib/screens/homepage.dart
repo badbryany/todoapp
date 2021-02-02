@@ -14,6 +14,12 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   DatabaseHelper _dbHelper = DatabaseHelper();
 
+  final List<Color> colors = [
+    Color(0xff050609),
+    Color(0xff131129),
+    Color(0xff874FD0)
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +29,19 @@ class _HomepageState extends State<Homepage> {
           height: double.infinity,
           //margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.symmetric(horizontal: 24.0),
-          color: Color(0xff1f1d2b),
+          //color: Color(0xff1f1d2b),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colors[1],
+                colors[0],
+                colors[1],
+              ],
+              stops: [0, 0.8, 1],
+            )
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -40,7 +58,8 @@ class _HomepageState extends State<Homepage> {
                         Text('Aufgaben', style: TextStyle(fontSize: 23),),
                       ],
                     ),
-                    SvgPicture.asset('assets/icons/avatar.svg', width: 35)
+                    SizedBox()
+                    //SvgPicture.asset('assets/icons/avatar.svg', width: 35)
                   ],
                 ),
               ),
@@ -89,7 +108,6 @@ class _HomepageState extends State<Homepage> {
                           ), // map
                           InkWell(
                             onTap: () async {
-                              int _id = snapshot.data.length + 1;
                               Task _newTask = Task(title: '', description: '');
                               var _taskId = await _dbHelper.insertTask(_newTask);
                               Navigator.push(
@@ -101,8 +119,11 @@ class _HomepageState extends State<Homepage> {
                               ).then((value) => setState(() {}));
                             },
                             child: Container(
-                              //padding: EdgeInsets.symmetric(vertical: 22.0, horizontal: 14.0,),
-                              margin: EdgeInsets.only(bottom: 20.0,),
+                              padding: EdgeInsets.symmetric(
+                                vertical: 32,
+                                horizontal: 24,
+                              ),
+                              //margin: EdgeInsets.only(bottom: 20.0,),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,

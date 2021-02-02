@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.light.copyWith(statusBarColor: Color(0xff272636), systemNavigationBarColor: Color(0xff1f1d2b)),
+      SystemUiOverlayStyle.light.copyWith(statusBarColor: Color(0xff131129), systemNavigationBarColor: Color(0xff050609)),
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false,

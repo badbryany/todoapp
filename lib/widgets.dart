@@ -41,7 +41,6 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
       return Colors.green[400];
     }
     return Color(0xaa53e4df);
-    
   }
 
   @override
@@ -53,7 +52,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
         horizontal: 24,
       ),
       decoration: BoxDecoration(
-        color: Color(0xff272636),
+        color: Color(0xff262a34),
         borderRadius: BorderRadius.circular(20.0),
       ),
       child: Column(
@@ -129,7 +128,7 @@ class _TodoWidgetState extends State<TodoWidget>{
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: widget.isDone ? Color(0xff2c2b3d) : Color(0xff272636),
+        color: widget.isDone ? Color(0xbb262a34) : Color(0xff262a34),
       ),
       child: ListTile(
         leading: Icon(Icons.check),
@@ -142,7 +141,10 @@ class _TodoWidgetState extends State<TodoWidget>{
             decoration: widget.isDone ? TextDecoration.lineThrough : null
           ),
         ),
-        subtitle: widget.description != null ? Text(widget.description) : null,
+        subtitle: widget.description != null ? Text(widget.description, style: TextStyle(
+          fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
+          decoration: widget.isDone ? TextDecoration.lineThrough : null
+        )) : null,
         trailing: IconButton(
           icon: Icon(Icons.delete),
           onPressed: widget.removeToDo,

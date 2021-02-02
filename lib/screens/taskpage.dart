@@ -26,7 +26,7 @@ class _TaskpageState extends State<Taskpage>{
   String todoTitle = '';
   String todoDescription = '';
   
-  double _range = 0;
+  double _range = 25;
   String _category = 'sonstige';
   List<String> _categories = ['sonstige'];
 
@@ -153,14 +153,22 @@ class _TaskpageState extends State<Taskpage>{
                               SizedBox(),
                             ],
                           ),
-                          Slider(
-                            value: _range,
-                            onChanged: (newValue) => setState(() {_range = newValue;}),
-                            max: 100,
-                            min: 0,
-                            divisions: 8,
-                            label: '${_range.round()}',
-                          )
+                          StatefulBuilder(
+                            builder: (context, setState) {
+                              return Slider(
+                                value: _range,
+                                max: 100,
+                                min: 0,
+                                divisions: 5,
+                                label: _range.round().toString(),
+                                onChanged: (newRating) {
+                                    _range = newRating;
+                                  setState(() {
+                                  });
+                                },
+                              );
+                            },
+                          ),
                         ]
                       ),
                     ),

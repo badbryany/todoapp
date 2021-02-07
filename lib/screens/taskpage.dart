@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'dart:math';
 import 'dart:convert';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../database_helper.dart';
 import '../models/task.dart';
@@ -46,6 +48,8 @@ class _TaskpageState extends State<Taskpage>{
   double _addHeight = 180;
   bool _description = false;
 
+  FlutterLocalNotificationsPlugin flutterNotification;
+
   @override
   void initState() {
     if (widget.task != null) {
@@ -62,20 +66,60 @@ class _TaskpageState extends State<Taskpage>{
     _todoFocus = FocusNode();
 
     super.initState();
+
+    var androidInitilize = new AndroidInitializationSettings('nicon');
+    var iOSinitilize = new IOSInitializationSettings();
+    var initilizationsSettings = new InitializationSettings(android: androidInitilize, iOS: iOSinitilize);
+
+    flutterNotification = new FlutterLocalNotificationsPlugin();
+    flutterNotification.initialize(initilizationsSettings, onSelectNotification: notificationSelected);
+  }
+
+  Future notificationSelected(String payload) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text("Notification: $payload"),
+      ),
+    );
+  }
+
+  Future _showNotification({DateTime notifocationTime, String title, String body}) async {
+    var androidDetails = new AndroidNotificationDetails("Channel ID", "Desi programmer", "This is my channel", importance: Importance.max);
+    var iOSDetails = new IOSNotificationDetails();
+    var generalNotificationDetails = new NotificationDetails(android: androidDetails, iOS: iOSDetails);
+
+    var scheduledTime; 
+    Duration duration = notifocationTime.difference(DateTime.now());
+    scheduledTime = DateTime.now().add(duration);
+
+    print('duration equals: ${duration}');
+
+    flutterNotification.schedule(Random().nextInt(10000*100000), title, body, scheduledTime, generalNotificationDetails);
+
+    print('notification is done');
   }
 
   Future<DateTime> pickDate() async {
-    DateTime _dateTime = await showDatePicker(
+    DateTime __dateTime = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
-      lastDate: DateTime(3000),
+      lastDate: DateTime(2050),
     );
     var _time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1),
     );
-    print('_time: $_time; _dateTime: $_dateTime;');
+
+    String month = __dateTime.month <= 9 ? '0${__dateTime.month}' : __dateTime.month.toString();
+    String day = __dateTime.day <= 9 ? '0${__dateTime.day}' : __dateTime.day.toString();
+
+    String hour = _time.hour <= 9 ? '0${_time.hour}' : _time.hour.toString();
+    String minute = _time.minute <= 9 ? '0${_time.minute}' : _time.minute.toString();
+
+    _dateTime = DateTime.parse('${__dateTime.year}-$month-$day $hour:$minute:00');
+    print(__dateTime.toString());
   }
 
   void advancedSettings() async {
@@ -88,13 +132,11 @@ class _TaskpageState extends State<Taskpage>{
       for (var j = 0; j < jsonDecode(i.getString('categories')).length; j++) {
         _outputList.add(jsonDecode(i.getString('categories'))[j]);
       }
-      print(_outputList);
       setState(() {
         _categories = _outputList;
       });
 
     });
-    print(_categories);
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -219,13 +261,11 @@ class _TaskpageState extends State<Taskpage>{
                                           onPressed: () async {
                                             if (_newCategory != null && _newCategory != '') {
                                               SharedPreferences prefs = await SharedPreferences.getInstance();
-                                              print('prefs: ' + prefs.getString('categories'));
                                               if (prefs.getString('categories') == null) {
                                                 prefs.setString('categories', '["sonstige"]');
                                               }
                                               List __categories = jsonDecode(prefs.getString('categories'));
                                               __categories.add(_newCategory);
-                                              print('__categories: $__categories');
                                               prefs.setString('categories', jsonEncode(__categories));
                                               
                                               List<String> _outputList = [];
@@ -346,7 +386,6 @@ class _TaskpageState extends State<Taskpage>{
                               _descriptionFocus.requestFocus();
                             },
                             onChanged: (value) async {
-                              print(value + ', taskId: ${widget.task.id}');
                               value.length <= 7 ? await _dbHelper.updateTaskTitle(_taskId, value) : print('too long');
                             },
                             controller: TextEditingController()
@@ -437,6 +476,7 @@ class _TaskpageState extends State<Taskpage>{
                                   text: snapshot.data[index].title,
                                   description: snapshot.data[index].description,
                                   isDone: snapshot.data[index].isDone == 0 ? false : true,
+                                  reminder: snapshot.data[index].reminder,
                                   removeToDo: () {
                                     _dbHelper.deleteToDo(snapshot.data[index].id);
                                     setState(() {});
@@ -551,8 +591,6 @@ class _TaskpageState extends State<Taskpage>{
                               ),
                               InkWell(
                                 onTap: () async {
-                                  print(_range);
-                                  print(_category);
                                   String value = todoTitle;
                                   // Check if the field is not empty
                                   if (value != '') {
@@ -565,8 +603,15 @@ class _TaskpageState extends State<Taskpage>{
                                         description: todoDescription,
                                         priority: _range.toInt(),
                                         category: _category,
+                                        reminder: _dateTime.toString(),
                                       );
+                                      print('save dateTime: $_dateTime');
                                       await _dbHelper.insertTodo(_newTodo);
+                                      _showNotification(
+                                        notifocationTime: _dateTime,
+                                        title: value,
+                                        body: todoDescription
+                                      );
                                       setState(() {
                                         todoTitle = '';
                                         todoDescription = '';

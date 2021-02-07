@@ -113,8 +113,9 @@ class TodoWidget extends StatefulWidget {
   final String description;
   final bool isDone;
   final Function removeToDo;
+  final String reminder;
 
-  TodoWidget({this.text, @required this.isDone, @required this.removeToDo, this.description});
+  TodoWidget({this.text, @required this.isDone, @required this.removeToDo, this.description, this.reminder});
 
   @override
   _TodoWidgetState createState() => _TodoWidgetState();
@@ -149,6 +150,7 @@ class _TodoWidgetState extends State<TodoWidget>{
           icon: Icon(Icons.delete),
           onPressed: widget.removeToDo,
         ),
+        onLongPress: () => showDialog(context: context, builder: (context) => AlertDialog(content: Text('widget.reminder: ${widget.reminder}'),)),
       ),
     );
   }

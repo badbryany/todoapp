@@ -28,7 +28,7 @@ class _TaskpageState extends State<Taskpage>{
   String todoTitle = '';
   String todoDescription = '';
   
-  double _range = 25;
+  double _range = 0;
   String _category = 'sonstige';
   List<String> _categories = ['sonstige'];
 
@@ -553,6 +553,7 @@ class _TaskpageState extends State<Taskpage>{
                                   description: snapshot.data[index].description,
                                   isDone: snapshot.data[index].isDone == 0 ? false : true,
                                   reminder: snapshot.data[index].reminder,
+                                  priority: snapshot.data[index].priority,
                                   removeToDo: () {
                                     _dbHelper.deleteToDo(snapshot.data[index].id);
                                     setState(() {});
@@ -693,6 +694,7 @@ class _TaskpageState extends State<Taskpage>{
                                       setState(() {
                                         todoTitle = '';
                                         todoDescription = '';
+                                        _range = 0;
                                         _dateTime = null;
                                         _addToDo = false;
                                         _description = false;

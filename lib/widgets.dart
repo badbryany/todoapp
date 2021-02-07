@@ -114,14 +114,32 @@ class TodoWidget extends StatefulWidget {
   final bool isDone;
   final Function removeToDo;
   final String reminder;
+  final int priority;
 
-  TodoWidget({this.text, @required this.isDone, @required this.removeToDo, this.description, this.reminder});
+  TodoWidget({this.text, @required this.isDone, @required this.removeToDo, this.description, this.reminder, this.priority});
 
   @override
   _TodoWidgetState createState() => _TodoWidgetState();
 }
 
 class _TodoWidgetState extends State<TodoWidget>{
+
+  List<Widget> widgets() {
+    print(widget.priority);
+    if (widget.priority != null) {
+      return [
+        SizedBox(width: 10),
+        Icon(
+          Icons.priority_high_rounded,
+          size: 20,
+          color: Colors.red.withOpacity(double.parse('0.${widget.priority}')),
+        ),
+      ];
+    } else {
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -133,14 +151,19 @@ class _TodoWidgetState extends State<TodoWidget>{
       ),
       child: ListTile(
         leading: Icon(Icons.check),
-        title: Text(
-          widget.text ?? "---",
-          style: TextStyle(
-            color: !widget.isDone ? Colors.white : Color(0xFF86829D),
-            fontSize: 16.0,
-            fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
-            decoration: widget.isDone ? TextDecoration.lineThrough : null
-          ),
+        title: Row(
+          children: [
+            Text(
+              widget.text ?? "---",
+              style: TextStyle(
+                color: !widget.isDone ? Colors.white : Color(0xFF86829D),
+                fontSize: 16.0,
+                fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
+                decoration: widget.isDone ? TextDecoration.lineThrough : null
+              ),
+            ),
+            ...widgets(),
+          ],
         ),
         subtitle: widget.description != null ? Text(widget.description, style: TextStyle(
           fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
@@ -150,7 +173,7 @@ class _TodoWidgetState extends State<TodoWidget>{
           icon: Icon(Icons.delete),
           onPressed: widget.removeToDo,
         ),
-        onLongPress: () => showDialog(context: context, builder: (context) => AlertDialog(content: Text('widget.reminder: ${widget.reminder}'),)),
+        //onLongPress: () => showDialog(context: context, builder: (context) => AlertDialog(content: Text('widget.reminder: ${widget.reminder}'),)),
       ),
     );
   }

@@ -93,11 +93,7 @@ class _TaskpageState extends State<Taskpage>{
     Duration duration = notifocationTime.difference(DateTime.now());
     scheduledTime = DateTime.now().add(duration);
 
-    print('duration equals: ${duration}');
-
     flutterNotification.schedule(Random().nextInt(10000*100000), title, body, scheduledTime, generalNotificationDetails);
-
-    print('notification is done');
   }
 
   Future<DateTime> pickDate() async {
@@ -119,7 +115,6 @@ class _TaskpageState extends State<Taskpage>{
     String minute = _time.minute <= 9 ? '0${_time.minute}' : _time.minute.toString();
 
     _dateTime = DateTime.parse('${__dateTime.year}-$month-$day $hour:$minute:00');
-    print(__dateTime.toString());
   }
 
   void editCategorie(String __category) async {
@@ -682,7 +677,6 @@ class _TaskpageState extends State<Taskpage>{
                                         category: _category,
                                         reminder: _dateTime.toString(),
                                       );
-                                      print('save dateTime: $_dateTime');
                                       await _dbHelper.insertTodo(_newTodo);
                                       if (_dateTime != null) {
                                         _showNotification(

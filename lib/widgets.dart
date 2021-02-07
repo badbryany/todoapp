@@ -125,7 +125,6 @@ class TodoWidget extends StatefulWidget {
 class _TodoWidgetState extends State<TodoWidget>{
 
   List<Widget> widgets() {
-    print(widget.priority);
     if (widget.priority != null) {
       return [
         SizedBox(width: 10),

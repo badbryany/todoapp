@@ -117,7 +117,21 @@ class _TaskpageState extends State<Taskpage>{
     _dateTime = DateTime.parse('${__dateTime.year}-$month-$day $hour:$minute:00');
   }
 
-  void toDoDetails(var todo) {
+  void toDoDetails(var todo) async {
+    await SharedPreferences.getInstance().then((i) {
+      if (i.getString('categories') == null) {
+        i.setString('categories', '["sonstige"]');
+      }
+      List<String> _outputList = [];
+      for (var j = 0; j < jsonDecode(i.getString('categories')).length; j++) {
+        _outputList.add(jsonDecode(i.getString('categories'))[j]);
+      }
+      setState(() {
+        _categories = _outputList;
+      });
+
+    });
+
     double _priority = todo.priority.toDouble();
     print(todo.toMap());
     String _reminder;
@@ -134,10 +148,10 @@ class _TaskpageState extends State<Taskpage>{
     } else {
       _reminder = 'keine';
     }
-    String _title;
-    String _description = '';
-    double _range;
-
+    String _title = todo.title;
+    String _description = todo.description;
+    String __category = todo.category;
+    print(_categories);
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -180,7 +194,7 @@ class _TaskpageState extends State<Taskpage>{
 
                   //body
                   TextFormField(
-                    initialValue: todo.title,
+                    initialValue: _title,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.title),
                       border: InputBorder.none,
@@ -197,53 +211,60 @@ class _TaskpageState extends State<Taskpage>{
                     ),
                     onChanged: (value) => _description = value,
                   ),
-                  Slider(
-                    value: _priority,
-                    max: 100,
-                    min: 0,
-                    divisions: 5,
-                    label: '${_priority.round()}%',
-                    onChanged: (newRating) {
-                        _priority = newRating;
-                      setState(() {});
-                    },
+                  StatefulBuilder(
+                    builder: (context, setState) {
+                      return Slider(
+                        value: _priority,
+                        max: 100,
+                        min: 0,
+                        divisions: 5,
+                        label: '${_priority.round()}%',
+                        onChanged: (newRating) {
+                            _priority = newRating;
+                          setState(() {});
+                        },
+                      );
+                    }
                   ),
-                  Container(
-                    height: 70,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _categories.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return InkWell(
-                          onTap: () => setState(() => _category = _categories[index]),
-                          onLongPress: () async {
-                            editCategorie(_categories[index]);
-                            setState(() {});
+                  StatefulBuilder(
+                    builder: (context, setState) {
+                      return Container(
+                        height: 70,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _categories.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return InkWell(
+                              onTap: () => setState(() => _category = _categories[index]),
+                              onLongPress: () async {
+                                editCategorie(_categories[index]);
+                                setState(() {});
+                              },
+                              child: Container(
+                                margin: EdgeInsets.all(10),
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: _categories[index] == _category ? Color(0xff778f6d) : Color(0xff47475b),
+                                  borderRadius: BorderRadius.circular(10)
+                                ),
+                                child: Center(
+                                  child: Text(_categories[index]),
+                                ),
+                              ),
+                            );
                           },
-                          child: Container(
-                            margin: EdgeInsets.all(10),
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: _categories[index] == _category ? Color(0xff778f6d) : Color(0xff47475b),
-                              borderRadius: BorderRadius.circular(10)
-                            ),
-                            child: Center(
-                              child: Text(_categories[index]),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    }
                   ),
                   Text('Erinnerung: $_reminder'),
                   Container(
                     child: InkWell(
                       onTap: () {
-                        print(_title);
-                        print(_description);
-                        print(_priority);
-                        print('kategorie');
+                        _dbHelper.updateTodo(todo.id, _title, _description, _priority, _category);
+
                         Navigator.pop(context);
+                        setState(() {});
                       },
                       child: Container(
                         margin: EdgeInsets.all(15),
@@ -610,7 +631,7 @@ class _TaskpageState extends State<Taskpage>{
                             controller: TextEditingController()
                               ..text = _taskTitle,
                             decoration: InputDecoration(
-                              hintText: "Title der Liste",
+                              hintText: "Titel der Liste",
                               border: InputBorder.none,
                             ),
                             style: TextStyle(

@@ -65,6 +65,15 @@ class DatabaseHelper {
     await _db.rawUpdate("UPDATE todo SET isDone = '$isDone' WHERE id = '$id'");
   }
 
+  Future<void> updateTodo(int id, String title, String description, double priority, String category) async {
+    Database _db = await database();
+    await _db.rawUpdate("UPDATE todo SET title='$title' WHERE id = '$id'");
+    await _db.rawUpdate("UPDATE todo SET description='$description' WHERE id = '$id'");
+    await _db.rawUpdate("UPDATE todo SET priority='$priority' WHERE id = '$id'");
+    await _db.rawUpdate("UPDATE todo SET category='$category' WHERE id = '$id'");
+    print('successfuly updated');
+  }
+
   Future<void> deleteTask(int id) async {
     Database _db = await database();
     await _db.rawDelete("DELETE FROM tasks WHERE id = '$id'");

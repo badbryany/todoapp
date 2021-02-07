@@ -607,14 +607,17 @@ class _TaskpageState extends State<Taskpage>{
                                       );
                                       print('save dateTime: $_dateTime');
                                       await _dbHelper.insertTodo(_newTodo);
-                                      _showNotification(
-                                        notifocationTime: _dateTime,
-                                        title: value,
-                                        body: todoDescription
-                                      );
+                                      if (_dateTime != null) {
+                                        _showNotification(
+                                          notifocationTime: _dateTime,
+                                          title: value,
+                                          body: todoDescription
+                                        );
+                                      }
                                       setState(() {
                                         todoTitle = '';
                                         todoDescription = '';
+                                        _dateTime = null;
                                         _addToDo = false;
                                         _description = false;
                                         blure = SizedBox();

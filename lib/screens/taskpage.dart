@@ -620,16 +620,12 @@ class _TaskpageState extends State<Taskpage>{
                           ),
                         ),
                         Expanded(
-                          child: TextField(
+                          child: TextFormField(
                             focusNode: _titleFocus,
-                            onSubmitted: (value) async {
-                              _descriptionFocus.requestFocus();
-                            },
                             onChanged: (value) async {
                               value.length <= 7 ? await _dbHelper.updateTaskTitle(_taskId, value) : print('too long');
                             },
-                            controller: TextEditingController()
-                              ..text = _taskTitle,
+                            initialValue: _taskTitle,
                             decoration: InputDecoration(
                               hintText: "Titel der Liste",
                               border: InputBorder.none,

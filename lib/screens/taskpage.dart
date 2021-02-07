@@ -202,7 +202,7 @@ class _TaskpageState extends State<Taskpage>{
                                 max: 100,
                                 min: 0,
                                 divisions: 5,
-                                label: _range.round().toString(),
+                                label: '${_range.round()}%',
                                 onChanged: (newRating) {
                                     _range = newRating;
                                   setState(() {
@@ -289,18 +289,22 @@ class _TaskpageState extends State<Taskpage>{
                               ),
                             ],
                           ),
-                          DropdownButton(
-                            value: _category,
-                            items: _categories.map((String value) {
-                              return DropdownMenuItem(
-                                value: value,
-                                child: Text(value),
+                          StatefulBuilder(
+                            builder: (context, setState) {
+                              return DropdownButton(
+                                value: _category,
+                                items: _categories.map((String value) {
+                                  return DropdownMenuItem(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (_newValue) {
+                                  setState(() {
+                                    _category = _newValue;
+                                  });
+                                },
                               );
-                            }).toList(),
-                            onChanged: (_newValue) {
-                              setState(() {
-                                _category = _newValue;
-                              });
                             },
                           ),
                         ]

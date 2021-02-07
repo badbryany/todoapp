@@ -122,6 +122,65 @@ class _TaskpageState extends State<Taskpage>{
     print(__dateTime.toString());
   }
 
+  void editCategorie(String __category) async {
+    await SharedPreferences.getInstance().then((i) {
+      List<String> _outputList = [];
+      for (var j = 0; j < jsonDecode(i.getString('categories')).length; j++) {
+        _outputList.add(jsonDecode(i.getString('categories'))[j]);
+      }
+      _outputList.remove(__category);
+      i.setString('categories', jsonEncode(_outputList));
+      setState(() {
+        _categories =_outputList;
+      });
+    });
+    /*showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
+      backgroundColor: Color(0xff262a34),
+      builder: (context) {
+        return Stack(
+          children: [
+            //line on top
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  margin: EdgeInsets.only(top: 7),
+                  height: 4,
+                  width: 90,
+                  decoration: BoxDecoration(
+                      color: Color(0xff636778),
+                      borderRadius: BorderRadius.circular(20)),
+                ),
+              ),
+            ),
+            //arrow back
+            Positioned(
+              bottom: 10,
+              left: 10,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, size: 20),
+                onPressed: () => Navigator.pop(context),
+              )
+            ),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('Kategorie "$__category" bearbeiten', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),)
+                ],
+              ),
+            )
+          ],
+        );
+      }
+    );*/
+  }
+
   void advancedSettings() async {
     double margin = 20;
     await SharedPreferences.getInstance().then((i) {
@@ -291,21 +350,34 @@ class _TaskpageState extends State<Taskpage>{
                           ),
                           StatefulBuilder(
                             builder: (context, setState) {
-                              return DropdownButton(
-                                value: _category,
-                                items: _categories.map((String value) {
-                                  return DropdownMenuItem(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (_newValue) {
-                                  setState(() {
-                                    _category = _newValue;
-                                  });
-                                },
+                              return Container(
+                                height: 70,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _categories.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return InkWell(
+                                      onTap: () => setState(() => _category = _categories[index]),
+                                      onLongPress: () async {
+                                        editCategorie(_categories[index]);
+                                        setState(() {});
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.all(10),
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: _categories[index] == _category ? Color(0xff778f6d) : Color(0xff47475b),
+                                          borderRadius: BorderRadius.circular(10)
+                                        ),
+                                        child: Center(
+                                          child: Text(_categories[index]),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               );
-                            },
+                            }
                           ),
                         ]
                       ),

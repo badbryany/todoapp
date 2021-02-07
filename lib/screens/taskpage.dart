@@ -117,6 +117,154 @@ class _TaskpageState extends State<Taskpage>{
     _dateTime = DateTime.parse('${__dateTime.year}-$month-$day $hour:$minute:00');
   }
 
+  void toDoDetails(var todo) {
+    double _priority = todo.priority.toDouble();
+    print(todo.toMap());
+    String _reminder;
+    if (todo.reminder != 'null' && todo.reminder != null && todo.reminder.runtimeType != Null) {
+      var __dateTime = DateTime.parse(todo.reminder);
+
+      String month = __dateTime.month <= 9 ? '0${__dateTime.month}' : __dateTime.month.toString();
+      String day = __dateTime.day <= 9 ? '0${__dateTime.day}' : __dateTime.day.toString();
+
+      String hour = __dateTime.hour <= 9 ? '0${__dateTime.hour}' : __dateTime.hour.toString();
+      String minute = __dateTime.minute <= 9 ? '0${__dateTime.minute}' : __dateTime.minute.toString();
+
+      _reminder = '$day.$month.${__dateTime.year} $hour:$minute';
+    } else {
+      _reminder = 'keine';
+    }
+    String _title;
+    String _description = '';
+    double _range;
+
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
+      backgroundColor: Color(0xff262a34),
+      builder: (context) {
+        return Stack(
+          children: [
+            //line on top
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  margin: EdgeInsets.only(top: 7),
+                  height: 4,
+                  width: 90,
+                  decoration: BoxDecoration(
+                      color: Color(0xff636778),
+                      borderRadius: BorderRadius.circular(20)),
+                ),
+              ),
+            ),
+            //exit
+            Positioned(
+              bottom: 10,
+              left: 10,
+              child: IconButton(
+                icon: Icon(Icons.clear, size: 20),
+                onPressed: () => Navigator.pop(context),
+              )
+            ),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  //title
+                  Text('Aufgabe "${todo.title}" bearbeiten', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),),
+
+                  //body
+                  TextFormField(
+                    initialValue: todo.title,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.title),
+                      border: InputBorder.none,
+                      hintText: 'Titel'
+                    ),
+                    onChanged: (value) => _title = value,
+                  ),
+                  TextFormField(
+                    initialValue: _description,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.description),
+                      border: InputBorder.none,
+                      hintText: 'Beschreibung'
+                    ),
+                    onChanged: (value) => _description = value,
+                  ),
+                  Slider(
+                    value: _priority,
+                    max: 100,
+                    min: 0,
+                    divisions: 5,
+                    label: '${_priority.round()}%',
+                    onChanged: (newRating) {
+                        _priority = newRating;
+                      setState(() {});
+                    },
+                  ),
+                  Container(
+                    height: 70,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _categories.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return InkWell(
+                          onTap: () => setState(() => _category = _categories[index]),
+                          onLongPress: () async {
+                            editCategorie(_categories[index]);
+                            setState(() {});
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(10),
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: _categories[index] == _category ? Color(0xff778f6d) : Color(0xff47475b),
+                              borderRadius: BorderRadius.circular(10)
+                            ),
+                            child: Center(
+                              child: Text(_categories[index]),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Text('Erinnerung: $_reminder'),
+                  Container(
+                    child: InkWell(
+                      onTap: () {
+                        print(_title);
+                        print(_description);
+                        print(_priority);
+                        print('kategorie');
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(15),
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            gradient: LinearGradient(
+                                colors: [Color(0xff213BD0), Color(0xff2c46da)])),
+                        child: Text("Bestätigen"),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        );
+      }
+    );
+  }
+
   void editCategorie(String __category) async {
     await SharedPreferences.getInstance().then((i) {
       List<String> _outputList = [];
@@ -534,7 +682,7 @@ class _TaskpageState extends State<Taskpage>{
                           child: ListView.builder(
                             itemCount: snapshot.data.length,
                             itemBuilder: (context, index) {
-                              return GestureDetector(
+                              return InkWell(
                                 onTap: () async {
                                   if(snapshot.data[index].isDone == 0){
                                     await _dbHelper.updateTodoDone(snapshot.data[index].id, 1);
@@ -543,6 +691,7 @@ class _TaskpageState extends State<Taskpage>{
                                   }
                                   setState(() {});
                                 },
+                                onLongPress: () => toDoDetails(snapshot.data[index]),
                                 child: TodoWidget(
                                   text: snapshot.data[index].title,
                                   description: snapshot.data[index].description,

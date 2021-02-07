@@ -172,7 +172,6 @@ class _TodoWidgetState extends State<TodoWidget>{
           icon: Icon(Icons.delete),
           onPressed: widget.removeToDo,
         ),
-        //onLongPress: () => showDialog(context: context, builder: (context) => AlertDialog(content: Text('widget.reminder: ${widget.reminder}'),)),
       ),
     );
   }

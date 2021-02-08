@@ -1,4 +1,4 @@
-package com.example.ToDoApp
+package de.vitzapp.tickit
 
 import io.flutter.embedding.android.FlutterActivity
 

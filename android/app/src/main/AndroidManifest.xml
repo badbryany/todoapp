@@ -6,11 +6,17 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name='android.permission.INTERNET' />
+    <uses-permission android:name='android.permission.BOOT_COMPLETED' />
+    <uses-permission android:name='android.permission.VIBRATE' />
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="ToDoApp"
         android:icon="@mipmap/ic_launcher">
+        <!--activity/-->
         <activity
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

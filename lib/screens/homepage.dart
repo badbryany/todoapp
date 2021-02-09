@@ -20,6 +20,24 @@ class _HomepageState extends State<Homepage> {
     Color(0xff874FD0)
   ];
 
+  Future notificationSelected(String payload) async {
+    _dbHelper.getTasks().then((e) =>
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Taskpage(
+            task: e[int.parse(payload)-1],
+            notificationSelected: notificationSelected,
+          ),
+        ),
+      ).then(
+        (value) {
+          setState(() {});
+        },
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +102,7 @@ class _HomepageState extends State<Homepage> {
                                     MaterialPageRoute(
                                       builder: (context) => Taskpage(
                                         task: e,
+                                        notificationSelected: notificationSelected,
                                       ),
                                     ),
                                   ).then(

@@ -14,8 +14,9 @@ import '../widgets.dart';
 
 class Taskpage extends StatefulWidget {
   final Task task;
+  final Function notificationSelected;
 
-  Taskpage({@required this.task});
+  Taskpage({@required this.task, @required this.notificationSelected});
 
   @override
   _TaskpageState createState() => _TaskpageState();
@@ -67,25 +68,22 @@ class _TaskpageState extends State<Taskpage>{
 
     super.initState();
 
-    var androidInitilize = new AndroidInitializationSettings('nicon');
+    var androidInitilize = new AndroidInitializationSettings('@mipmap/ic_launcher');
     var iOSinitilize = new IOSInitializationSettings();
     var initilizationsSettings = new InitializationSettings(android: androidInitilize, iOS: iOSinitilize);
 
     flutterNotification = new FlutterLocalNotificationsPlugin();
-    flutterNotification.initialize(initilizationsSettings, onSelectNotification: notificationSelected);
+    flutterNotification.initialize(initilizationsSettings, onSelectNotification: widget.notificationSelected);
   }
 
-  Future notificationSelected(String payload) async {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text("Notification: $payload"),
-      ),
+  Future _showNotification({DateTime notifocationTime, String title, String body, int taskId}) async {
+    var androidDetails = new AndroidNotificationDetails(
+      '0',
+      'oskar',
+      'ToDoChannel',
+      importance: Importance.max,
+      enableVibration: true,
     );
-  }
-
-  Future _showNotification({DateTime notifocationTime, String title, String body}) async {
-    var androidDetails = new AndroidNotificationDetails("Channel ID", "Desi programmer", "This is my channel", importance: Importance.max);
     var iOSDetails = new IOSNotificationDetails();
     var generalNotificationDetails = new NotificationDetails(android: androidDetails, iOS: iOSDetails);
 
@@ -93,7 +91,7 @@ class _TaskpageState extends State<Taskpage>{
     Duration duration = notifocationTime.difference(DateTime.now());
     scheduledTime = DateTime.now().add(duration);
 
-    flutterNotification.schedule(Random().nextInt(10000*100000), title, body, scheduledTime, generalNotificationDetails);
+    flutterNotification.schedule(Random().nextInt(10000*100000), title, body, scheduledTime, generalNotificationDetails, payload: '$taskId');
   }
 
   Future<DateTime> pickDate() async {
@@ -848,7 +846,8 @@ class _TaskpageState extends State<Taskpage>{
                                         _showNotification(
                                           notifocationTime: _dateTime,
                                           title: value,
-                                          body: todoDescription
+                                          body: todoDescription,
+                                          taskId: _taskId
                                         );
                                       }
                                       setState(() {

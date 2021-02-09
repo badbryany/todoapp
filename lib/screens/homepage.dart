@@ -132,9 +132,10 @@ class _HomepageState extends State<Homepage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Taskpage(
-                                          task: Task(id: _taskId, title: '', description: ''),
-                                        )),
+                                  builder: (context) => Taskpage(
+                                    task: Task(id: _taskId, title: '', description: ''),
+                                    notificationSelected: notificationSelected,
+                                  )),
                               ).then((value) => setState(() {}));
                             },
                             child: Container(

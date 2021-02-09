@@ -76,13 +76,14 @@ class _TaskpageState extends State<Taskpage>{
     flutterNotification.initialize(initilizationsSettings, onSelectNotification: widget.notificationSelected);
   }
 
-  Future _showNotification({DateTime notifocationTime, String title, String body, int taskId}) async {
+  Future _showNotification({DateTime notifocationTime, String title, String body, int taskId, String subText}) async {
     var androidDetails = new AndroidNotificationDetails(
       '0',
       'oskar',
       'ToDoChannel',
       importance: Importance.max,
       enableVibration: true,
+      subText: subText
     );
     var iOSDetails = new IOSNotificationDetails();
     var generalNotificationDetails = new NotificationDetails(android: androidDetails, iOS: iOSDetails);
@@ -847,7 +848,8 @@ class _TaskpageState extends State<Taskpage>{
                                           notifocationTime: _dateTime,
                                           title: value,
                                           body: todoDescription,
-                                          taskId: _taskId
+                                          taskId: _taskId,
+                                          subText: widget.task.title
                                         );
                                       }
                                       setState(() {

@@ -131,7 +131,7 @@ class _TodoWidgetState extends State<TodoWidget>{
         Icon(
           Icons.priority_high_rounded,
           size: 20,
-          color: Colors.red.withOpacity(double.parse('0.${widget.priority}')),
+          color: widget.priority == 100 ? Colors.red : Colors.red.withOpacity(double.parse('0.${widget.priority}')),
         ),
       ];
     } else {

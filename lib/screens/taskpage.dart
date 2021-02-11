@@ -24,6 +24,7 @@ class Taskpage extends StatefulWidget {
 
 class _TaskpageState extends State<Taskpage>{
   DatabaseHelper _dbHelper = DatabaseHelper();
+
   final key = GlobalKey<AnimatedListState>();
 
   String todoTitle = '';
@@ -54,9 +55,6 @@ class _TaskpageState extends State<Taskpage>{
   @override
   void initState() {
     if (widget.task != null) {
-      // Set visibility to true
-      _contentVisile = true;
-
       _taskTitle = widget.task.title;
       _taskDescription = widget.task.description;
       _taskId = widget.task.id;

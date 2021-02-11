@@ -132,9 +132,7 @@ class _HomepageState extends State<Homepage> {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          //margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.symmetric(horizontal: 24.0),
-          //color: Color(0xff1f1d2b),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,

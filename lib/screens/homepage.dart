@@ -187,7 +187,7 @@ class _HomepageState extends State<Homepage> {
                         children: [
                           ...snapshot.data.map((e) {
                               return OpenContainer(
-                                closedColor: Colors.transparent,
+                                closedColor: Colors.transparent.withOpacity(0),
                                 transitionDuration: Duration(milliseconds: 250),
                                 openBuilder: (_, closeContainer) {
                                   return Taskpage(
@@ -209,6 +209,7 @@ class _HomepageState extends State<Homepage> {
                                     ),
                                   );
                                 },
+                                onClosed: (_) => setState(() {}),
                               );
                             }
                           ), // map
@@ -240,7 +241,10 @@ class _HomepageState extends State<Homepage> {
                     );
                     } else {
                       return Center(
-                        child: CircularProgressIndicator(),
+                        child: Container(
+                          width: 100,
+                          child: LinearProgressIndicator(),
+                        ),
                       );
                     }
                   },

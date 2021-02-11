@@ -43,6 +43,19 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
     return Color(0xaa53e4df);
   }
 
+  double whichWidth(String doneTasks) {
+    if (doneTasks.split('/')[0] == '0') {
+      return 0;
+    }
+    return (100 / int.parse(doneTasks.split('/')[1])) * int.parse(doneTasks.split('/')[0]);
+    /*if (doneTasks == '0/0') {
+      return 0;
+    }
+    if (doneTasks.split('/')[0] == doneTasks.split('/')[1]) { // 4 == 4
+      return 100;
+    }*/
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,17 +101,49 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
             future: getToDos(this.widget.taskId),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return Container(
-                  padding: EdgeInsets.only(left: 11, right: 11, top: 7, bottom: 7),
-                  margin: EdgeInsets.only(top: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: whichColor(snapshot.data.toString())
-                  ),
-                  child: Text(snapshot.data.toString(), style: TextStyle(fontWeight: FontWeight.bold),)
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.only(top: 13),
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: Color(0xff363748),
+                                borderRadius: BorderRadius.circular(40)
+                              ),
+                            ),
+                            Container(
+                              width: whichWidth(snapshot.data.toString()),
+                              height: 5,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [Color(0xff63f1b3), Color(0xffb8ffe5)]
+                                ),
+                                borderRadius: BorderRadius.circular(40)
+                              ),
+                              child: SizedBox(width: 20)
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 13),
+                    Container(
+                      margin: EdgeInsets.only(left: 10),
+                      child: Text(snapshot.data.toString(), style: TextStyle(fontWeight: FontWeight.bold))
+                    ),
+                  ],
                 );
               } else {
-                return Text('0/0', style: TextStyle(fontWeight: FontWeight.bold));
+                return LinearProgressIndicator();
               }
             },
           ),

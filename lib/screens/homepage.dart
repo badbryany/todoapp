@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:animations/animations.dart';
 
 import '../database_helper.dart';
 import './taskpage.dart';
@@ -13,6 +14,8 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   DatabaseHelper _dbHelper = DatabaseHelper();
+
+  int newTaskId;
 
   final List<Color> colors = [
     Color(0xff050609),
@@ -183,55 +186,43 @@ class _HomepageState extends State<Homepage> {
                         crossAxisSpacing: 20,
                         children: [
                           ...snapshot.data.map((e) {
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Taskpage(
-                                        task: e,
-                                        notificationSelected: notificationSelected,
-                                      ),
-                                    ),
-                                  ).then(
-                                    (value) {
-                                      setState(() {});
-                                    },
+                              return OpenContainer(
+                                closedColor: Colors.transparent,
+                                transitionDuration: Duration(milliseconds: 250),
+                                openBuilder: (_, closeContainer) {
+                                  return Taskpage(
+                                    task: e,
+                                    notificationSelected: notificationSelected,
                                   );
                                 },
-                                onLongPress: () async {
-                                  await _dbHelper.deleteTask(e.id);
-                                  setState(() {
-                                    _dbHelper.getTasks();
-                                  });
+                                closedBuilder: (_, openContainer) {
+                                  return InkWell(
+                                    onLongPress: () async {
+                                      _dbHelper.deleteTask(e.id);
+                                      setState(() {});
+                                    },
+                                    onTap: openContainer,
+                                    child: TaskCardWidget(
+                                      taskId: e.id,
+                                      title: e.title,
+                                      desc: e.description,
+                                    ),
+                                  );
                                 },
-                                child: TaskCardWidget(
-                                  taskId: e.id,
-                                  title: e.title,
-                                  desc: e.description,
-                                ),
                               );
                             }
                           ), // map
                           InkWell(
                             onTap: () async {
                               Task _newTask = Task(title: '', description: '');
-                              var _taskId = await _dbHelper.insertTask(_newTask);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Taskpage(
-                                    task: Task(id: _taskId, title: '', description: ''),
-                                    notificationSelected: notificationSelected,
-                                  )),
-                              ).then((value) => setState(() {}));
+                              newTaskId = await _dbHelper.insertTask(_newTask);
+                              setState(() {});
                             },
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                 vertical: 32,
                                 horizontal: 24,
                               ),
-                              //margin: EdgeInsets.only(bottom: 20.0,),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,
@@ -262,3 +253,35 @@ class _HomepageState extends State<Homepage> {
     );
   }
 }
+/*
+InkWell(
+                                onTap: () async {
+                                  Task _newTask = Task(title: '', description: '');
+                                  var _taskId = await _dbHelper.insertTask(_newTask);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Taskpage(
+                                        task: Task(id: _taskId, title: '', description: ''),
+                                        notificationSelected: notificationSelected,
+                                      )),
+                                  ).then((value) => setState(() {}));
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 32,
+                                    horizontal: 24,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [Color(0xffc197fb), Color(0xff806ff2)]
+                                    ),
+                                    color: Color(0xff806ff2),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Icon(Icons.add)
+                                ),
+                              );
+*/

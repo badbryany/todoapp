@@ -143,7 +143,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                   ],
                 );
               } else {
-                return LinearProgressIndicator();
+                return SizedBox();
               }
             },
           ),

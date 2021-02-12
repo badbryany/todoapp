@@ -188,7 +188,8 @@ class _HomepageState extends State<Homepage> {
                           ...snapshot.data.map((e) {
                               return OpenContainer(
                                 closedColor: Colors.transparent.withOpacity(0),
-                                transitionDuration: Duration(milliseconds: 250),
+                                openColor: Colors.transparent.withOpacity(0),
+                                transitionDuration: Duration(milliseconds: 500),
                                 openBuilder: (_, closeContainer) {
                                   return Taskpage(
                                     task: e,

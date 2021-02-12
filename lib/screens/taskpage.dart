@@ -620,7 +620,7 @@ class _TaskpageState extends State<Taskpage>{
                           child: TextFormField(
                             focusNode: _titleFocus,
                             onChanged: (value) async {
-                              value.length <= 7 ? await _dbHelper.updateTaskTitle(_taskId, value) : print('too long');
+                              value.length <= 20 ? await _dbHelper.updateTaskTitle(_taskId, value) : print('too long');
                             },
                             initialValue: _taskTitle,
                             decoration: InputDecoration(
@@ -645,20 +645,16 @@ class _TaskpageState extends State<Taskpage>{
                       child: TextField(
                         focusNode: _descriptionFocus,
                         onSubmitted: (value) async {
-                          if(value != '' && value.length <= 20){
-                            if(_taskId != 0){
-                              await _dbHelper.updateTaskDescription(_taskId, value);
-                              _taskDescription = value;
-                            }
+                          if(_taskId != 0){
+                            await _dbHelper.updateTaskDescription(_taskId, value);
+                            _taskDescription = value;
                           }
                           _todoFocus.requestFocus();
                         },
                         onChanged: (value) async {
-                          if(value != '' && value.length <= 20){
-                            if(_taskId != 0){
-                              await _dbHelper.updateTaskDescription(_taskId, value);
-                              _taskDescription = value;
-                            }
+                          if(_taskId != 0){
+                            await _dbHelper.updateTaskDescription(_taskId, value);
+                            _taskDescription = value;
                           }
                         },
                         controller: TextEditingController()..text = _taskDescription,

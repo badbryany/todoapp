@@ -110,7 +110,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                       child: Stack(
                         children: [
                           Container(
-                            width: 100,
+                            width: 200,
                             height: 5,
                             decoration: BoxDecoration(
                               color: Color(0xff363748),
@@ -118,7 +118,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                             ),
                           ),
                           Container(
-                            width: whichWidth(snapshot.data.toString()),
+                            width: whichWidth(snapshot.data.toString())*2,
                             height: 5,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(

@@ -11,7 +11,7 @@ class DatabaseHelper {
       join(await getDatabasesPath(), 'todo.db'),
       onCreate: (db, version) async {
         await db.execute("CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT)");
-        await db.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, taskId INTEGER, title TEXT, description TEXT, priority INTEGER, reminder TEXT, category TEXT, isDone INTEGER)");
+        await db.execute("CREATE TABLE todo (id INTEGER PRIMARY KEY, taskId INTEGER, title TEXT, description TEXT, priority INTEGER, reminder TEXT, category TEXT, place TEXT, isDone INTEGER)");
 
         return db;
       },

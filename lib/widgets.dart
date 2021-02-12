@@ -105,34 +105,32 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Container(
-                        margin: EdgeInsets.only(top: 13),
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 100,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                color: Color(0xff363748),
-                                borderRadius: BorderRadius.circular(40)
-                              ),
+                    Container(
+                      margin: EdgeInsets.only(top: 13),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: Color(0xff363748),
+                              borderRadius: BorderRadius.circular(40)
                             ),
-                            Container(
-                              width: whichWidth(snapshot.data.toString()),
-                              height: 5,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [Color(0xff63f1b3), Color(0xffb8ffe5)]
-                                ),
-                                borderRadius: BorderRadius.circular(40)
+                          ),
+                          Container(
+                            width: whichWidth(snapshot.data.toString()),
+                            height: 5,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [Color(0xff63f1b3), Color(0xffb8ffe5)]
                               ),
-                              child: SizedBox(width: 20)
+                              borderRadius: BorderRadius.circular(40)
                             ),
-                          ],
-                        ),
+                            child: SizedBox(width: 20)
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(height: 13),
@@ -143,7 +141,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                   ],
                 );
               } else {
-                return SizedBox();
+                return SizedBox(height: 45);
               }
             },
           ),

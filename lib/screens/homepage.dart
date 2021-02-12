@@ -15,7 +15,9 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   DatabaseHelper _dbHelper = DatabaseHelper();
 
-  int newTaskId;
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  List<dynamic> tasks = [];
+  //int counter = 0;
 
   final List<Color> colors = [
     Color(0xff050609),
@@ -128,8 +130,22 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
+  Future<void> getTasks() async {
+    tasks = [];
+    var _tasks = await _dbHelper.getTasks();
+
+    for (int i = 0; i < _tasks.length; i++) {
+      listKey.currentState.insertItem(i);
+      tasks.add(_tasks[i]);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (tasks.length == 0) {
+      getTasks();
+    }
+    print(tasks.length);
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -167,90 +183,78 @@ class _HomepageState extends State<Homepage> {
                         Text('Aufgaben', style: TextStyle(fontSize: 23),),
                       ],
                     ),
-                    SizedBox()
+                    InkWell(
+                      onTap: () async {
+                        Task _newTask = Task(title: '', description: '');
+                        await _dbHelper.insertTask(_newTask);
+                        listKey.currentState.insertItem(tasks.length);
+                        tasks.add(_newTask);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: Icon(Icons.add)
+                      )
+                    ),
                     //SvgPicture.asset('assets/icons/avatar.svg', width: 35)
                   ],
                 ),
               ),
               Expanded(
-                child: FutureBuilder(
-                  initialData: [],
-                  future: _dbHelper.getTasks(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      return ScrollConfiguration(
-                      behavior: NoGlowBehaviour(),
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        children: [
-                          ...snapshot.data.map((e) {
-                              return OpenContainer(
-                                closedColor: Colors.transparent.withOpacity(0),
-                                openColor: Colors.transparent.withOpacity(0),
-                                transitionDuration: Duration(milliseconds: 500),
-                                openBuilder: (_, closeContainer) {
-                                  return Taskpage(
-                                    task: e,
-                                    notificationSelected: notificationSelected,
+                child: AnimatedList(
+                  key: listKey,
+                  initialItemCount: tasks.length,
+                  itemBuilder: (context, index, animation) {
+                    if (index >= tasks.length) {
+                      print('how is that possibile???!!!');
+                      return SizedBox();
+                    }
+                    return SizeTransition(
+                      axis: Axis.vertical,
+                      sizeFactor: animation,
+                      child: OpenContainer(
+                        closedColor: colors[1].withOpacity(0.1),
+                        openColor: Colors.transparent.withOpacity(0),
+                        transitionDuration: Duration(milliseconds: 500),
+                        onClosed: (res) async {
+                          print('onClosed was riggered');
+                          await getTasks();
+                        },
+                        openBuilder: (_, closeContainer) {
+                          return Taskpage(
+                            task: Task(id: tasks[index].id, title: tasks[index].title, description: tasks[index].description),
+                            notificationSelected: notificationSelected,
+                          );
+                        },
+                        closedBuilder: (_, openContainer) {
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 20),
+                            child: InkWell(
+                              onLongPress: () async {
+                                listKey.currentState.removeItem(index, (context, animation) {
+                                  return SizeTransition(
+                                    axis: Axis.vertical,
+                                    sizeFactor: animation,
+                                    child: TaskCardWidget(taskId: tasks[index].id,title: tasks[index].title,desc: tasks[index].description,)
                                   );
-                                },
-                                closedBuilder: (_, openContainer) {
-                                  return InkWell(
-                                    onLongPress: () async {
-                                      _dbHelper.deleteTask(e.id);
-                                      setState(() {});
-                                    },
-                                    onTap: openContainer,
-                                    child: TaskCardWidget(
-                                      taskId: e.id,
-                                      title: e.title,
-                                      desc: e.description,
-                                    ),
-                                  );
-                                },
-                                onClosed: (_) => setState(() {}),
-                              );
-                            }
-                          ), // map
-                          InkWell(
-                            onTap: () async {
-                              Task _newTask = Task(title: '', description: '');
-                              newTaskId = await _dbHelper.insertTask(_newTask);
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 32,
-                                horizontal: 24,
+                                },);
+
+                                _dbHelper.deleteTask(tasks[index].id);
+                                tasks.removeWhere((e) => e.id == tasks[index].id);
+                              },
+                              onTap: openContainer,
+                              child: TaskCardWidget(
+                                taskId: tasks[index].id,
+                                title: tasks[index].title,
+                                desc: tasks[index].description,
                               ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [Color(0xffc197fb), Color(0xff806ff2)]
-                                ),
-                                color: Color(0xff806ff2),
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              child: Icon(Icons.add)
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     );
-                    } else {
-                      return Center(
-                        child: Container(
-                          width: 100,
-                          child: LinearProgressIndicator(),
-                        ),
-                      );
-                    }
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -258,35 +262,3 @@ class _HomepageState extends State<Homepage> {
     );
   }
 }
-/*
-InkWell(
-                                onTap: () async {
-                                  Task _newTask = Task(title: '', description: '');
-                                  var _taskId = await _dbHelper.insertTask(_newTask);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Taskpage(
-                                        task: Task(id: _taskId, title: '', description: ''),
-                                        notificationSelected: notificationSelected,
-                                      )),
-                                  ).then((value) => setState(() {}));
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 32,
-                                    horizontal: 24,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [Color(0xffc197fb), Color(0xff806ff2)]
-                                    ),
-                                    color: Color(0xff806ff2),
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  child: Icon(Icons.add)
-                                ),
-                              );
-*/

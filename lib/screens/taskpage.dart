@@ -685,7 +685,7 @@ class _TaskpageState extends State<Taskpage>{
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset('assets/imgs/relax.svg', width: MediaQuery.of(context).size.width*0.6, alignment: Alignment.center,),
-                                  SizedBox(height: 20),
+                                  SizedBox(height: 50),
                                   Text('Du hast alle Aufgaben erledigt!\nEntspann dich!', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey),)
                                 ],
                               ),

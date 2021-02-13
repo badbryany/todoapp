@@ -15,8 +15,9 @@ import '../widgets.dart';
 class Taskpage extends StatefulWidget {
   final Task task;
   final Function notificationSelected;
+  final Function reloadTasks;
 
-  Taskpage({@required this.task, @required this.notificationSelected});
+  Taskpage({@required this.task, @required this.notificationSelected, @required this.reloadTasks});
 
   @override
   _TaskpageState createState() => _TaskpageState();
@@ -575,6 +576,7 @@ class _TaskpageState extends State<Taskpage>{
 
   @override
   Widget build(BuildContext context) {
+    print(widget.task.id);
     List<dynamic> toDoSettings = [
       {'icon': Icon(Icons.subject, size: 30, color: Color(0xffbf96fa)), 'onTap': () => setState(() {_description = !_description; _addHeight = 230;})},
       {'icon': Icon(Icons.alarm, color: Color(0xffbf96fa), size: 30), 'onTap': pickDate},
@@ -608,11 +610,13 @@ class _TaskpageState extends State<Taskpage>{
                     child: Row(
                       children: [
                         InkWell(
-                          onTap: () {
+                          onTap: () async {
+                            await widget.reloadTasks();
+                            print('reload tasks');
                             Navigator.pop(context);
                           },
                           child: Padding(
-                            padding: const EdgeInsets.all(24.0),
+                            padding: EdgeInsets.all(24.0),
                             child: Icon(Icons.arrow_back)
                           ),
                         ),

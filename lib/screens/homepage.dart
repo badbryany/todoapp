@@ -33,6 +33,7 @@ class _HomepageState extends State<Homepage> {
           builder: (context) => Taskpage(
             task: e[int.parse(payload)-1],
             notificationSelected: notificationSelected,
+            reloadTasks: getTasks,
           ),
         ),
       ).then(
@@ -142,10 +143,8 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    if (tasks.length == 0) {
-      getTasks();
-    }
-    print(tasks.length);
+   getTasks();
+
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -183,19 +182,23 @@ class _HomepageState extends State<Homepage> {
                         Text('Aufgaben', style: TextStyle(fontSize: 23),),
                       ],
                     ),
+                    SizedBox(),
                     InkWell(
                       onTap: () async {
                         Task _newTask = Task(title: '', description: '');
                         await _dbHelper.insertTask(_newTask);
+                        print(tasks.length);
                         listKey.currentState.insertItem(tasks.length);
-                        tasks.add(_newTask);
+                        tasks.insert(tasks.length, _newTask);
+
+                        getTasks();
                       },
                       child: Container(
                         padding: EdgeInsets.all(10),
                         child: Icon(Icons.add)
                       )
                     ),
-                    //SvgPicture.asset('assets/icons/avatar.svg', width: 35)
+                    SvgPicture.asset('assets/icons/avatar.svg', width: 35)
                   ],
                 ),
               ),
@@ -207,51 +210,49 @@ class _HomepageState extends State<Homepage> {
                     if (index >= tasks.length) {
                       print('how is that possibile???!!!');
                       return SizedBox();
-                    }
-                    return SizeTransition(
-                      axis: Axis.vertical,
-                      sizeFactor: animation,
-                      child: OpenContainer(
-                        closedColor: colors[1].withOpacity(0.1),
-                        openColor: Colors.transparent.withOpacity(0),
-                        transitionDuration: Duration(milliseconds: 500),
-                        onClosed: (res) async {
-                          print('onClosed was riggered');
-                          await getTasks();
-                        },
-                        openBuilder: (_, closeContainer) {
-                          return Taskpage(
-                            task: Task(id: tasks[index].id, title: tasks[index].title, description: tasks[index].description),
-                            notificationSelected: notificationSelected,
-                          );
-                        },
-                        closedBuilder: (_, openContainer) {
-                          return Container(
-                            margin: EdgeInsets.only(bottom: 20),
-                            child: InkWell(
-                              onLongPress: () async {
-                                listKey.currentState.removeItem(index, (context, animation) {
-                                  return SizeTransition(
-                                    axis: Axis.vertical,
-                                    sizeFactor: animation,
-                                    child: TaskCardWidget(taskId: tasks[index].id,title: tasks[index].title,desc: tasks[index].description,)
-                                  );
-                                },);
+                    } else {
+                      return SizeTransition(
+                        axis: Axis.vertical,
+                        sizeFactor: animation,
+                        child: OpenContainer(
+                          closedColor: colors[1].withOpacity(0.1),
+                          openColor: Colors.transparent.withOpacity(0),
+                          transitionDuration: Duration(milliseconds: 500),
+                          openBuilder: (_, closeContainer) {
+                            return Taskpage(
+                              task: Task(id: tasks[index].id, title: tasks[index].title, description: tasks[index].description),
+                              notificationSelected: notificationSelected,
+                              reloadTasks: getTasks
+                            );
+                          },
+                          closedBuilder: (_, openContainer) {
+                            return Container(
+                              margin: EdgeInsets.only(bottom: 20),
+                              child: InkWell(
+                                onLongPress: () async {
+                                  listKey.currentState.removeItem(index, (context, animation) {
+                                    return SizeTransition(
+                                      axis: Axis.vertical,
+                                      sizeFactor: animation,
+                                      child: TaskCardWidget(taskId: tasks[index].id,title: tasks[index].title,desc: tasks[index].description,)
+                                    );
+                                  },);
 
-                                _dbHelper.deleteTask(tasks[index].id);
-                                tasks.removeWhere((e) => e.id == tasks[index].id);
-                              },
-                              onTap: openContainer,
-                              child: TaskCardWidget(
-                                taskId: tasks[index].id,
-                                title: tasks[index].title,
-                                desc: tasks[index].description,
+                                  _dbHelper.deleteTask(tasks[index].id);
+                                  tasks.removeAt(index);
+                                },
+                                onTap: openContainer,
+                                child: TaskCardWidget(
+                                  taskId: tasks[index].id,
+                                  title: tasks[index].title,
+                                  desc: tasks[index].description,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
+                            );
+                          },
+                        ),
+                      );
+                    }
                   },
                 ),
               ),

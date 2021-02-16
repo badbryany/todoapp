@@ -157,6 +157,10 @@ class _TaskpageState extends State<Taskpage>{
       ),
       backgroundColor: Color(0xff262a34),
       builder: (context) {
+        List<dynamic> editingFields = [
+          {'icon': Icon(Icons.title), 'text': todo.title, 'placeholder': 'Titel'},
+          {'icon': Icon(Icons.description), 'text': todo.description, 'placeholder': 'Beschreibung'},
+        ];
         return Stack(
           children: [
             //line on top
@@ -188,27 +192,85 @@ class _TaskpageState extends State<Taskpage>{
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   //title
-                  Text('Aufgabe "${todo.title}" bearbeiten', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),),
+                  Text('${todo.title}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),),
 
                   //body
-                  TextFormField(
-                    initialValue: _title,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.title),
-                      border: InputBorder.none,
-                      hintText: 'Titel'
-                    ),
-                    onChanged: (value) => _title = value,
+                  
+                  Container(
+                    margin: EdgeInsets.only(top: 10),
+                    child: Column(
+                      children: [
+                        ...editingFields.map((e) => 
+                          InkWell(
+                            onTap: () => showDialog(
+                              context: context,
+                              builder: (context) {
+                                String newValue;
+                                return AlertDialog(
+                                  backgroundColor: Color(0xff262a34),
+                                  content: Container(
+                                    height: 100,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(e['placeholder'] + ' bearbeiten', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+                                        TextFormField(
+                                          initialValue: e['text'],
+                                          decoration: InputDecoration(
+                                            prefixIcon: e['icon'],
+                                            border: InputBorder.none,
+                                            hintText: e['placeholder']
+                                          ),
+                                          onChanged: (value) => newValue = value,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    FlatButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('abbrechen')
+                                    ),
+                                    FlatButton(
+                                      onPressed: () {
+                                        if (e['placeholder'] == 'Titel') {
+                                          _title = newValue;
+                                        } else if (e['placeholder'] == 'Beschreibung') {
+                                          _description = newValue;
+                                        }
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('bestätigen', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    )
+                                  ],
+                                );
+                              }
+                            ),
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(20),
+                              margin: EdgeInsets.all(5),
+                              width: MediaQuery.of(context).size.width*0.8,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.black.withOpacity(0.1)
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  e['icon'],
+                                  Text(e['text'] != '' ? e['text'] : e['placeholder']),
+                                  Icon(Icons.edit)
+                                ],
+                              ),
+                            )
+                          )
+                        ),
+                      ],
+                    )
                   ),
-                  TextFormField(
-                    initialValue: _description,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.description),
-                      border: InputBorder.none,
-                      hintText: 'Beschreibung'
-                    ),
-                    onChanged: (value) => _description = value,
-                  ),
+
                   StatefulBuilder(
                     builder: (context, setState) {
                       return Slider(
@@ -242,7 +304,7 @@ class _TaskpageState extends State<Taskpage>{
                                 margin: EdgeInsets.all(10),
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: _categories[index] == _category ? Color(0xff778f6d) : Color(0xff47475b),
+                                  color: _categories[index] == _category ? Color(0xff5f8273) : Color(0xff47475b),
                                   borderRadius: BorderRadius.circular(10)
                                 ),
                                 child: Center(
@@ -528,7 +590,7 @@ class _TaskpageState extends State<Taskpage>{
                                         margin: EdgeInsets.all(10),
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
-                                          color: _categories[index] == _category ? Color(0xff778f6d) : Color(0xff47475b),
+                                          color: _categories[index] == _category ? Color(0xff5f8273) : Color(0xff47475b),
                                           borderRadius: BorderRadius.circular(10)
                                         ),
                                         child: Center(

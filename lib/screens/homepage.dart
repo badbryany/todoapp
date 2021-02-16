@@ -131,19 +131,21 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  Future<void> getTasks() async {
+  Future<void> getTasks(foo) async {
     tasks = [];
     var _tasks = await _dbHelper.getTasks();
 
     for (int i = 0; i < _tasks.length; i++) {
-      listKey.currentState.insertItem(i);
+      if (foo) {
+        listKey.currentState.insertItem(i);
+      }
       tasks.add(_tasks[i]);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-   getTasks();
+   getTasks(true);
 
     return Scaffold(
       body: SafeArea(
@@ -187,11 +189,10 @@ class _HomepageState extends State<Homepage> {
                       onTap: () async {
                         Task _newTask = Task(title: '', description: '');
                         await _dbHelper.insertTask(_newTask);
-                        print(tasks.length);
                         listKey.currentState.insertItem(tasks.length);
                         tasks.insert(tasks.length, _newTask);
 
-                        getTasks();
+                        getTasks(false);
                       },
                       child: Container(
                         padding: EdgeInsets.all(10),
@@ -240,6 +241,8 @@ class _HomepageState extends State<Homepage> {
 
                                   _dbHelper.deleteTask(tasks[index].id);
                                   tasks.removeAt(index);
+
+                                  getTasks(false);
                                 },
                                 onTap: openContainer,
                                 child: TaskCardWidget(

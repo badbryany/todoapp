@@ -18,8 +18,7 @@ class _HomepageState extends State<Homepage> {
 
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   List<dynamic> tasks = [];
-  //int counter = 0;
-
+  
   final List<Color> colors = [
     Color(0xff050609),
     Color(0xff131129),
@@ -212,9 +211,6 @@ class _HomepageState extends State<Homepage> {
                         );
                       },
                     ),
-                    /*InkWell(
-                      child: SvgPicture.asset('assets/icons/avatar.svg', width: 35)
-                    )*/
                   ],
                 ),
               ),
@@ -247,18 +243,39 @@ class _HomepageState extends State<Homepage> {
                               margin: EdgeInsets.only(bottom: 20),
                               child: InkWell(
                                 onLongPress: () async {
-                                  listKey.currentState.removeItem(index, (context, animation) {
-                                    return SizeTransition(
-                                      axis: Axis.vertical,
-                                      sizeFactor: animation,
-                                      child: TaskCardWidget(taskId: tasks[index].id,title: tasks[index].title,desc: tasks[index].description,)
-                                    );
-                                  },);
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        backgroundColor: Color(0xff262a34),
+                                        content: Text('Willst du die Liste wirklich löschen?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: Text('abbrechen')
+                                          ),
+                                          FlatButton(
+                                            onPressed: () {
+                                              listKey.currentState.removeItem(index, (context, animation) {
+                                                return SizeTransition(
+                                                  axis: Axis.vertical,
+                                                  sizeFactor: animation,
+                                                  child: TaskCardWidget(taskId: tasks[index].id,title: tasks[index].title,desc: tasks[index].description,)
+                                                );
+                                              },);
 
-                                  _dbHelper.deleteTask(tasks[index].id);
-                                  tasks.removeAt(index);
+                                              _dbHelper.deleteTask(tasks[index].id);
+                                              tasks.removeAt(index);
 
-                                  getTasks(false);
+                                              getTasks(false);
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('löschen', style: TextStyle(fontWeight: FontWeight.bold))
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                  );
                                 },
                                 onTap: openContainer,
                                 child: TaskCardWidget(

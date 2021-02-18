@@ -61,7 +61,7 @@ class LoginPage extends StatelessWidget {
                     'TickIt!',
                     style: TextStyle(
                       fontFamily: 'Truculenta',
-                      fontSize: 30,
+                      fontSize: 45,
                       fontWeight: FontWeight.bold
                     )
                   ),

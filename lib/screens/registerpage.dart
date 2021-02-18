@@ -64,10 +64,17 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
-class GetUsername extends StatelessWidget {
+class GetUsername extends StatefulWidget {
   final Function setWidget;
 
   GetUsername(this.setWidget);
+
+  @override
+  _GetUsernameState createState() => _GetUsernameState();
+}
+
+class _GetUsernameState extends State<GetUsername> {
+  Widget hint;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +85,7 @@ class GetUsername extends StatelessWidget {
         Text('Benutzername wählen', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
         SizedBox(height: 15),
         Text('Du kannst ihn jederzeit ändern.', style: TextStyle(color: Colors.grey)),
+        SizedBox(height: 5),
         SizedBox(height: 20),
         InputField(
           icon: Icon(Icons.person),
@@ -92,7 +100,23 @@ class GetUsername extends StatelessWidget {
           text: 'weiter',
           onPressed: () {
             if (_RegisterPageState.username.length != 0) {
-              setWidget(GetPassword(setWidget));
+              widget.setWidget(GetPassword(widget.setWidget));
+            } else {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: Color(0xff262a34),
+                    content: Text('gib einen Benutzernamen ein', textAlign: TextAlign.center,),
+                    actions: [
+                      FlatButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('ok', style: TextStyle(fontWeight: FontWeight.bold))
+                      )
+                    ],
+                  );
+                }
+              );
             }
           }
         )
@@ -137,10 +161,21 @@ class _GetPasswordState extends State<GetPassword> {
             if (_RegisterPageState.password.length >= 6) {
               widget.setWidget(FinalRegister(widget.setWidget));
             } else {
-              print('no');
-              setState(() {
-                hintColor = Colors.red;
-              });
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: Color(0xff262a34),
+                    content: Text('das Passwort ist zu kurz', textAlign: TextAlign.center,),
+                    actions: [
+                      FlatButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('ok', style: TextStyle(fontWeight: FontWeight.bold))
+                      )
+                    ],
+                  );
+                }
+              );
             }
           },
         )

@@ -437,7 +437,9 @@ class _TaskpageState extends State<Taskpage>{
                 left: 10,
                 child: IconButton(
                   icon: Icon(Icons.arrow_back, size: 20),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () async {
+                    
+                  },
                 )
               ),
               Positioned.fill(
@@ -646,303 +648,311 @@ class _TaskpageState extends State<Taskpage>{
       {'icon': Icon(Icons.tune, color: Color(0xffbf96fa), size: 30), 'onTap': advancedSettings},
     ];
     return Scaffold(
-      body: Container(
+      body: WillPopScope(
+        onWillPop: () async {
+          await widget.reloadTasks(false);
+          print('reload tasks');
+          widget.closeContainer();
+          return true;
+        },
         child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                colors[1],
-                colors[0],
-                colors[1],
-              ],
-              stops: [0, 0.8, 1],
-            )
-          ),
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: 24.0,
-                      bottom: 6.0,
-                    ),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            await widget.reloadTasks(false);
-                            print('reload tasks');
-                            widget.closeContainer();
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.all(24.0),
-                            child: Icon(Icons.arrow_back)
-                          ),
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            focusNode: _titleFocus,
-                            onChanged: (value) async {
-                              value.length <= 20 ? await _dbHelper.updateTaskTitle(_taskId, value) : print('too long');
-                            },
-                            initialValue: _taskTitle,
-                            decoration: InputDecoration(
-                              hintText: "Titel der Liste",
-                              border: InputBorder.none,
-                            ),
-                            style: TextStyle(
-                              fontSize: 26.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Visibility(
-                    visible: true,
-                    child: Padding(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  colors[1],
+                  colors[0],
+                  colors[1],
+                ],
+                stops: [0, 0.8, 1],
+              )
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
                       padding: EdgeInsets.only(
-                        bottom: 12.0,
+                        top: 24.0,
+                        bottom: 6.0,
                       ),
-                      child: TextField(
-                        focusNode: _descriptionFocus,
-                        onSubmitted: (value) async {
-                          if(_taskId != 0){
-                            await _dbHelper.updateTaskDescription(_taskId, value);
-                            _taskDescription = value;
-                          }
-                          _todoFocus.requestFocus();
-                        },
-                        onChanged: (value) async {
-                          if(_taskId != 0){
-                            await _dbHelper.updateTaskDescription(_taskId, value);
-                            _taskDescription = value;
-                          }
-                        },
-                        controller: TextEditingController()..text = _taskDescription,
-                        decoration: InputDecoration(
-                          hintText: "Gib eine Beschreibung der Liste ein...",
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 24.0,
+                      child: Row(
+                        children: [
+                          InkWell(
+                            onTap: () async {
+                              await widget.reloadTasks(false);
+                              print('reload tasks');
+                              widget.closeContainer();
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(24.0),
+                              child: Icon(Icons.arrow_back)
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  FutureBuilder(
-                    future: _dbHelper.getTodo(_taskId),
-                    builder: (context, snapshot) {
-                      if (snapshot.data != null) {
-                        if (snapshot.data.length == 0) {
-                          return Expanded(
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset('assets/imgs/relax.svg', width: MediaQuery.of(context).size.width*0.6, alignment: Alignment.center,),
-                                  SizedBox(height: 50),
-                                  Text('Du hast alle Aufgaben erledigt!\nEntspann dich!', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey),)
-                                ],
+                          Expanded(
+                            child: TextFormField(
+                              focusNode: _titleFocus,
+                              onChanged: (value) async {
+                                value.length <= 20 ? await _dbHelper.updateTaskTitle(_taskId, value) : print('too long');
+                              },
+                              initialValue: _taskTitle,
+                              decoration: InputDecoration(
+                                hintText: "Titel der Liste",
+                                border: InputBorder.none,
+                              ),
+                              style: TextStyle(
+                                fontSize: 26.0,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          );
-                        }
-                        return Expanded(
-                          child: ListView.builder(
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () async {
-                                  if(snapshot.data[index].isDone == 0){
-                                    await _dbHelper.updateTodoDone(snapshot.data[index].id, 1);
-                                  } else {
-                                    await _dbHelper.updateTodoDone(snapshot.data[index].id, 0);
-                                  }
-                                  setState(() {});
-                                },
-                                onLongPress: () => toDoDetails(snapshot.data[index]),
-                                child: TodoWidget(
-                                  text: snapshot.data[index].title,
-                                  description: snapshot.data[index].description,
-                                  isDone: snapshot.data[index].isDone == 0 ? false : true,
-                                  reminder: snapshot.data[index].reminder,
-                                  priority: snapshot.data[index].priority,
-                                  removeToDo: () {
-                                    _dbHelper.deleteToDo(snapshot.data[index].id);
+                          )
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: true,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          bottom: 12.0,
+                        ),
+                        child: TextField(
+                          focusNode: _descriptionFocus,
+                          onSubmitted: (value) async {
+                            if(_taskId != 0){
+                              await _dbHelper.updateTaskDescription(_taskId, value);
+                              _taskDescription = value;
+                            }
+                            _todoFocus.requestFocus();
+                          },
+                          onChanged: (value) async {
+                            if(_taskId != 0){
+                              await _dbHelper.updateTaskDescription(_taskId, value);
+                              _taskDescription = value;
+                            }
+                          },
+                          controller: TextEditingController()..text = _taskDescription,
+                          decoration: InputDecoration(
+                            hintText: "Gib eine Beschreibung der Liste ein...",
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 24.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    FutureBuilder(
+                      future: _dbHelper.getTodo(_taskId),
+                      builder: (context, snapshot) {
+                        if (snapshot.data != null) {
+                          if (snapshot.data.length == 0) {
+                            return Expanded(
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset('assets/imgs/relax.svg', width: MediaQuery.of(context).size.width*0.6, alignment: Alignment.center,),
+                                    SizedBox(height: 50),
+                                    Text('Du hast alle Aufgaben erledigt!\nEntspann dich!', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey),)
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          return Expanded(
+                            child: ListView.builder(
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () async {
+                                    if(snapshot.data[index].isDone == 0){
+                                      await _dbHelper.updateTodoDone(snapshot.data[index].id, 1);
+                                    } else {
+                                      await _dbHelper.updateTodoDone(snapshot.data[index].id, 0);
+                                    }
                                     setState(() {});
                                   },
-                                ),
-                              );
-                            },
+                                  onLongPress: () => toDoDetails(snapshot.data[index]),
+                                  child: TodoWidget(
+                                    text: snapshot.data[index].title,
+                                    description: snapshot.data[index].description,
+                                    isDone: snapshot.data[index].isDone == 0 ? false : true,
+                                    reminder: snapshot.data[index].reminder,
+                                    priority: snapshot.data[index].priority,
+                                    removeToDo: () {
+                                      _dbHelper.deleteToDo(snapshot.data[index].id);
+                                      setState(() {});
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        } else {
+                          return Text('foo');
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: 35,
+                  right: 25,
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () => setState(() {
+                        _addToDo = !_addToDo;
+                        blure = InkWell(
+                          onTap: () => setState(() {blure = SizedBox(); _addToDo = false; _description = false;}),
+                          child: Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 1,
+                                sigmaY: 1,
+                              ),
+                              child: Container(
+                                color: Colors.black.withOpacity(0),
+                              ),
+                            )
                           ),
                         );
-                      } else {
-                        return Text('foo');
-                      }
-                    },
-                  ),
-                ],
-              ),
-              Positioned(
-                top: 35,
-                right: 25,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () => setState(() {
-                      _addToDo = !_addToDo;
-                      blure = InkWell(
-                        onTap: () => setState(() {blure = SizedBox(); _addToDo = false; _description = false;}),
-                        child: Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(
-                              sigmaX: 1,
-                              sigmaY: 1,
-                            ),
-                            child: Container(
-                              color: Colors.black.withOpacity(0),
-                            ),
-                          )
-                        ),
-                      );
-                    }),
+                      }),
+                    )
                   )
-                )
-              ),
-              blure,
-              //add ToDo
-              Visibility(
-                visible: _addToDo,
-                child: Positioned(
-                  bottom: 0,
-                  left: 0,
-                  width: MediaQuery.of(context).size.width,
-                  height: _addHeight,
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Color(0xff262a34),
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(left: 10),
-                          child: TextFormField(
-                            autofocus: true,
-                            initialValue: todoTitle,
-                            focusNode: _todoFocus,
-                            //controller: TextEditingController()..text = '',
-                            onChanged: (value) => todoTitle = value,
-                            decoration: InputDecoration(
-                              hintText: "Neue Aufgabe...",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                        Visibility(
-                          visible: _description,
-                          child: Container(
+                ),
+                blure,
+                //add ToDo
+                Visibility(
+                  visible: _addToDo,
+                  child: Positioned(
+                    bottom: 0,
+                    left: 0,
+                    width: MediaQuery.of(context).size.width,
+                    height: _addHeight,
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Color(0xff262a34),
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
                             margin: EdgeInsets.only(left: 10),
                             child: TextFormField(
+                              autofocus: true,
+                              initialValue: todoTitle,
                               focusNode: _todoFocus,
-                              initialValue: todoDescription,
                               //controller: TextEditingController()..text = '',
-                              onChanged: (value) => todoDescription = value,
+                              onChanged: (value) => todoTitle = value,
                               decoration: InputDecoration(
-                                hintText: 'Details hinzufügen...',
-                                hintStyle: TextStyle(fontSize: 14),
+                                hintText: "Neue Aufgabe...",
                                 border: InputBorder.none,
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(bottom: 40),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  //{var color = '0xffffc548';},
-                                  ...toDoSettings.map((e) => InkWell(
-                                    onTap: e['onTap'],
-                                    child: Container(
-                                      margin: EdgeInsets.all(8),
-                                      padding: EdgeInsets.all(7),
-                                      child: e['icon'],
-                                    ),
-                                  )),
-                                ],
-                              ),
-                              InkWell(
-                                onTap: () async {
-                                  String value = todoTitle;
-                                  // Check if the field is not empty
-                                  if (value != '') {
-                                    if (_taskId != 0) {
-                                      DatabaseHelper _dbHelper = DatabaseHelper();
-                                      Todo _newTodo = Todo(
-                                        title: value,
-                                        isDone: 0,
-                                        taskId: _taskId,
-                                        description: todoDescription,
-                                        priority: _range.toInt(),
-                                        category: _category,
-                                        reminder: _dateTime.toString(),
-                                      );
-                                      await _dbHelper.insertTodo(_newTodo);
-                                      if (_dateTime != null) {
-                                        _showNotification(
-                                          notifocationTime: _dateTime,
-                                          title: value,
-                                          body: todoDescription,
-                                          taskId: _taskId,
-                                          subText: widget.task.title
-                                        );
-                                      }
-                                      setState(() {
-                                        todoTitle = '';
-                                        todoDescription = '';
-                                        _range = 0;
-                                        _dateTime = null;
-                                        _addToDo = false;
-                                        _description = false;
-                                        blure = SizedBox();
-                                      });
-                                      //_todoFocus.requestFocus();
-                                    } else {
-                                      print('Task doesn\'t exist');
-                                    }
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 20),
-                                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                  child: Text('Speichern', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                          Visibility(
+                            visible: _description,
+                            child: Container(
+                              margin: EdgeInsets.only(left: 10),
+                              child: TextFormField(
+                                focusNode: _todoFocus,
+                                initialValue: todoDescription,
+                                //controller: TextEditingController()..text = '',
+                                onChanged: (value) => todoDescription = value,
+                                decoration: InputDecoration(
+                                  hintText: 'Details hinzufügen...',
+                                  hintStyle: TextStyle(fontSize: 14),
+                                  border: InputBorder.none,
                                 ),
-                              )
-                            ],
+                              ),
+                            ),
                           ),
-                        )
-                      ],
+                          Container(
+                            margin: EdgeInsets.only(bottom: 40),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    //{var color = '0xffffc548';},
+                                    ...toDoSettings.map((e) => InkWell(
+                                      onTap: e['onTap'],
+                                      child: Container(
+                                        margin: EdgeInsets.all(8),
+                                        padding: EdgeInsets.all(7),
+                                        child: e['icon'],
+                                      ),
+                                    )),
+                                  ],
+                                ),
+                                InkWell(
+                                  onTap: () async {
+                                    String value = todoTitle;
+                                    // Check if the field is not empty
+                                    if (value != '') {
+                                      if (_taskId != 0) {
+                                        DatabaseHelper _dbHelper = DatabaseHelper();
+                                        Todo _newTodo = Todo(
+                                          title: value,
+                                          isDone: 0,
+                                          taskId: _taskId,
+                                          description: todoDescription,
+                                          priority: _range.toInt(),
+                                          category: _category,
+                                          reminder: _dateTime.toString(),
+                                        );
+                                        await _dbHelper.insertTodo(_newTodo);
+                                        if (_dateTime != null) {
+                                          _showNotification(
+                                            notifocationTime: _dateTime,
+                                            title: value,
+                                            body: todoDescription,
+                                            taskId: _taskId,
+                                            subText: widget.task.title
+                                          );
+                                        }
+                                        setState(() {
+                                          todoTitle = '';
+                                          todoDescription = '';
+                                          _range = 0;
+                                          _dateTime = null;
+                                          _addToDo = false;
+                                          _description = false;
+                                          blure = SizedBox();
+                                        });
+                                        //_todoFocus.requestFocus();
+                                      } else {
+                                        print('Task doesn\'t exist');
+                                      }
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 20),
+                                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                    child: Text('Speichern', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

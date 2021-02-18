@@ -223,7 +223,8 @@ class _HomepageState extends State<Homepage> {
                             return Taskpage(
                               task: Task(id: tasks[index].id, title: tasks[index].title, description: tasks[index].description),
                               notificationSelected: notificationSelected,
-                              reloadTasks: getTasks
+                              reloadTasks: getTasks,
+                              closeContainer: closeContainer,
                             );
                           },
                           closedBuilder: (_, openContainer) {

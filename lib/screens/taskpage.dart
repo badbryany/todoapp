@@ -16,8 +16,9 @@ class Taskpage extends StatefulWidget {
   final Task task;
   final Function notificationSelected;
   final Function reloadTasks;
+  final Function closeContainer;
 
-  Taskpage({@required this.task, @required this.notificationSelected, @required this.reloadTasks});
+  Taskpage({@required this.task, @required this.notificationSelected, @required this.reloadTasks, @required this.closeContainer});
 
   @override
   _TaskpageState createState() => _TaskpageState();
@@ -673,9 +674,9 @@ class _TaskpageState extends State<Taskpage>{
                       children: [
                         InkWell(
                           onTap: () async {
-                            await widget.reloadTasks();
+                            await widget.reloadTasks(false);
                             print('reload tasks');
-                            Navigator.pop(context);
+                            widget.closeContainer();
                           },
                           child: Padding(
                             padding: EdgeInsets.all(24.0),

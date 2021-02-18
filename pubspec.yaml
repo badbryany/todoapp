@@ -29,6 +29,9 @@ flutter:
     - family: Poppins
       fonts:
         - asset: ./assets/fonts/ProductSans-Light.ttf
+    - family: Truculenta
+      fonts:
+        - asset: ./assets/fonts/Truculenta.ttf
   assets:
     - assets/icons/
     - assets/imgs/

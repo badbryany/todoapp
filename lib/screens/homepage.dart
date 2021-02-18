@@ -6,6 +6,7 @@ import '../database_helper.dart';
 import './taskpage.dart';
 import '../widgets.dart';
 import '../models/task.dart';
+import './loginpage.dart';
 
 class Homepage extends StatefulWidget {
   @override
@@ -34,6 +35,7 @@ class _HomepageState extends State<Homepage> {
             task: e[int.parse(payload)-1],
             notificationSelected: notificationSelected,
             reloadTasks: getTasks,
+            closeContainer: () => print('bug'),
           ),
         ),
       ).then(
@@ -69,7 +71,6 @@ class _HomepageState extends State<Homepage> {
                     SizedBox(height: 15,),
                     Text('Entwickler: Oskar Kellermann', style: TextStyle(fontSize: 22,fontWeight: FontWeight.w600),),
                     SizedBox(height: 15,),
-                    //Text('Helfer: stackoverflow.com/', style: TextStyle(fontSize: 14),textAlign: TextAlign.center,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -199,7 +200,21 @@ class _HomepageState extends State<Homepage> {
                         child: Icon(Icons.add)
                       )
                     ),
-                    SvgPicture.asset('assets/icons/avatar.svg', width: 35)
+                    OpenContainer(
+                      closedColor: colors[1].withOpacity(0.1),
+                      openColor: Colors.transparent.withOpacity(0),
+                      closedBuilder: (context, openContainer) {
+                        return SvgPicture.asset('assets/icons/avatar.svg', width: 35);
+                      },
+                      openBuilder: (context, closeContainer) {
+                        return LoginPage(
+                          closeContainer: closeContainer,
+                        );
+                      },
+                    ),
+                    /*InkWell(
+                      child: SvgPicture.asset('assets/icons/avatar.svg', width: 35)
+                    )*/
                   ],
                 ),
               ),

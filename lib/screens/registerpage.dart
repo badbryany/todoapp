@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:requests/requests.dart';
 
 import './homepage.dart';
 
@@ -273,9 +273,9 @@ class FinalRegister extends StatelessWidget {
 void checkUsername({String username, Function setWidget}) async {
   print('checking username...');
   setWidget(SizedBox(width: 25, height: 25, child: CircularProgressIndicator(strokeWidth: 2,)));
-  var r = await http.get('http://10.0.0.129:3000/checkUsername?username=$username');
+  var r = await Requests.get('http://10.0.0.129:3000/checkUsername?username=$username');
   
-  if (r.body == 'available') {
+  if (r.content() == 'available') {
     _RegisterPageState.error = '';
     setWidget(
       Icon(
@@ -298,14 +298,14 @@ void checkUsername({String username, Function setWidget}) async {
 
 Future<bool> register(String username, String password) async {
   print('try to log in...');
-  var r = await http.post(
+  var r = await Requests.post(
     'http://10.0.0.129:3000/register',
-    body: {
+    json: {
       'username': username,
       'password': password
     },
   );
-  if (r.body == 'success') {
+  if (r.content() == 'success') {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString('username', username);

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:requests/requests.dart';
 
-import '../session.dart';
-
 import '../models/inputField.dart';
 import '../models/submitButton.dart';
 

@@ -437,9 +437,7 @@ class _TaskpageState extends State<Taskpage>{
                 left: 10,
                 child: IconButton(
                   icon: Icon(Icons.arrow_back, size: 20),
-                  onPressed: () async {
-                    
-                  },
+                  onPressed: () => Navigator.pop(context),
                 )
               ),
               Positioned.fill(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../database_helper.dart';
+
 import './loginpage.dart';
 import './homepage.dart';
 
@@ -15,15 +17,37 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  DatabaseHelper _dbHelper = DatabaseHelper();
+
   final List<Color> colors = [
     Color(0xff050609),
     Color(0xff131129),
     Color(0xff874FD0)
   ];
+
+  String username = '...';
+  String description = '';
+
+  int todoCount = 0;
+  int taskCount = 0;
+  int friends = 0;
   
+  void getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var _todos = await _dbHelper.getTodos();
+    var _tasks = await _dbHelper.getTasks();
+
+    setState(() {
+      username = prefs.getString('username');
+      todoCount = _todos.length;
+      taskCount = _tasks.length;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    
+    getData();
     if (!HomePage.loggedIn) {
       return LoginPage();
     } else {
@@ -80,29 +104,29 @@ class _ProfileState extends State<Profile> {
                       children: [
                         SvgPicture.asset('assets/icons/avatar.svg', width: 80),
                         SizedBox(height: 10),
-                        Text('oskar', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
                         SizedBox(height: 5),
-                        Text('hallo ich heiße Oskar!')
+                        Text(description)
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('63', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('$todoCount', style: TextStyle(fontWeight: FontWeight.bold)),
                         Text('Aufgaben'),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('23', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('$taskCount', style: TextStyle(fontWeight: FontWeight.bold)),
                         Text('Listen'),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('13', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('$friends', style: TextStyle(fontWeight: FontWeight.bold)),
                         Text('Freunde'),
                       ],
                     ),

@@ -6,8 +6,9 @@ class InputField extends StatelessWidget {
   final bool obscureText;
   final Function onChange;
   final String initialValue;
+  final Widget suffixWidget;
 
-  InputField({this.icon, this.hintText, this.obscureText, this.onChange, this.initialValue});
+  InputField({this.icon, this.hintText, this.obscureText, this.onChange, this.initialValue, this.suffixWidget});
   
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,10 @@ class InputField extends StatelessWidget {
         obscureText: obscureText,
         initialValue: initialValue,
         decoration: InputDecoration(
+          suffix: Container(
+            margin: EdgeInsets.only(right: 25),
+            child: suffixWidget
+          ),
           labelText: hintText,
           labelStyle: TextStyle(fontSize: 14),
           hintText: hintText,

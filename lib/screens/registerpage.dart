@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './homepage.dart';
 
@@ -19,12 +21,32 @@ class _RegisterPageState extends State<RegisterPage> {
   static String username = '';
   static String password = '';
   
+  static String error = '';
+
   Widget content;
 
   void setWidget(Widget nextWidget) {
-    setState(() {
-      content = nextWidget;
-    });
+    if (error == '') {
+      setState(() {
+        content = nextWidget;
+      });
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Color(0xff262a34),
+            content: Text(error, textAlign: TextAlign.center,),
+            actions: [
+              FlatButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('ok', style: TextStyle(fontWeight: FontWeight.bold))
+              )
+            ],
+          );
+        }
+      );
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -75,6 +97,13 @@ class GetUsername extends StatefulWidget {
 
 class _GetUsernameState extends State<GetUsername> {
   Widget hint;
+  Widget suffixWidget;
+
+  void setSuffixWidget(Widget newWidget) {
+    setState(() {
+      suffixWidget = newWidget;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +120,12 @@ class _GetUsernameState extends State<GetUsername> {
           icon: Icon(Icons.person),
           hintText: 'Benutzername',
           obscureText: false,
+          suffixWidget: suffixWidget,
           onChange: (value) {
+            checkUsername(
+              username: value,
+              setWidget: setSuffixWidget
+            );
             _RegisterPageState.username = value;
           },
           initialValue: ''
@@ -102,21 +136,7 @@ class _GetUsernameState extends State<GetUsername> {
             if (_RegisterPageState.username.length != 0) {
               widget.setWidget(GetPassword(widget.setWidget));
             } else {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    backgroundColor: Color(0xff262a34),
-                    content: Text('gib einen Benutzernamen ein', textAlign: TextAlign.center,),
-                    actions: [
-                      FlatButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('ok', style: TextStyle(fontWeight: FontWeight.bold))
-                      )
-                    ],
-                  );
-                }
-              );
+              _RegisterPageState.error = 'Gib einen Benutzernamen ein';
             }
           }
         )
@@ -153,29 +173,15 @@ class _GetPasswordState extends State<GetPassword> {
           onChange: (value) {
             _RegisterPageState.password = value;
           },
-          initialValue: ''
         ),
         SubmitButton(
           text: 'weiter',
           onPressed: () {
             if (_RegisterPageState.password.length >= 6) {
+              _RegisterPageState.error = '';
               widget.setWidget(FinalRegister(widget.setWidget));
             } else {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    backgroundColor: Color(0xff262a34),
-                    content: Text('das Passwort ist zu kurz', textAlign: TextAlign.center,),
-                    actions: [
-                      FlatButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('ok', style: TextStyle(fontWeight: FontWeight.bold))
-                      )
-                    ],
-                  );
-                }
-              );
+              _RegisterPageState.error = 'das Passwort ist zu kurz';
             }
           },
         )
@@ -191,43 +197,122 @@ class FinalRegister extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width*0.8,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset('assets/icons/logo.png', width: 75),
-          SizedBox(height: 30),
-          Text(
-            'Willkommen bei TickIt!,\n${_RegisterPageState.username}',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 30
-            )
-          ),
-          SizedBox(height: 15),
-          Text(
-            'Jetzt kannst du alle Funktionen von TickIt! verwenden und deine Aufgaben mit Freunden zusammen beweltigen!',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 16,
-            )
-          ),
-          SizedBox(height: 20),
-          SubmitButton(
-            text: 'fertig',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Homepage()
+    return FutureBuilder(
+      future: register(_RegisterPageState.username, _RegisterPageState.password),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.data) {
+            return Container(
+              width: MediaQuery.of(context).size.width*0.8,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset('assets/icons/logo.png', width: 75),
+                  SizedBox(height: 30),
+                  Text(
+                    'Willkommen bei TickIt!,\n${_RegisterPageState.username}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30
+                    )
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    'Jetzt kannst du alle Funktionen von TickIt! verwenden und deine Aufgaben mit Freunden zusammen beweltigen!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                    )
+                  ),
+                  SizedBox(height: 20),
+                  SubmitButton(
+                    text: 'fertig',
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Homepage()
+                      ),
+                    ),
+                  )
+                ],
               ),
-            ),
-          )
-        ],
-      ),
+            );
+          } else {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Es ist etwas schief gelaufen.\nBitte setze dich mit dem Entwickler in Verbindung!', textAlign: TextAlign.center, style: TextStyle(color: Colors.red, fontSize: 23)),
+                SizedBox(height: 20),
+                FlatButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Icon(Icons.arrow_back)
+                ),
+              ],
+            );
+          }
+        } else {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('Registrieren...', style: TextStyle(fontSize: 25)),
+              SizedBox(height: 50),
+              CircularProgressIndicator(),
+            ],
+          );
+        }
+      },
     );
+  }
+}
+
+void checkUsername({String username, Function setWidget}) async {
+  print('checking username...');
+  setWidget(SizedBox(width: 25, height: 25, child: CircularProgressIndicator(strokeWidth: 2,)));
+  var r = await http.get('http://10.0.0.129:3000/checkUsername?username=$username');
+  
+  if (r.body == 'available') {
+    _RegisterPageState.error = '';
+    setWidget(
+      Icon(
+        Icons.check,
+        color: Colors.greenAccent[400],
+        size: 30,
+      )
+    );
+  } else {
+    _RegisterPageState.error = 'Der Benutzername wird bereits verwendet...';
+    setWidget(
+      Icon(
+        Icons.clear,
+        color: Colors.red[700],
+        size: 30,
+      )
+    );
+  }
+}
+
+Future<bool> register(String username, String password) async {
+  print('try to log in...');
+  var r = await http.post(
+    'http://10.0.0.129:3000/register',
+    body: {
+      'username': username,
+      'password': password
+    },
+  );
+  if (r.body == 'success') {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('username', username);
+    prefs.setString('password', password);
+
+    return true;
+  } else {
+    return false;
   }
 }

@@ -21,7 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   static String username = '';
   static String password = '';
   
-  static String error = '';
+  static String error = 'Gib etwas ein';
 
   Widget content;
 
@@ -133,11 +133,10 @@ class _GetUsernameState extends State<GetUsername> {
         SubmitButton(
           text: 'weiter',
           onPressed: () {
-            if (_RegisterPageState.username.length != 0) {
-              widget.setWidget(GetPassword(widget.setWidget));
-            } else {
+            if (_RegisterPageState.username.length == 0) {
               _RegisterPageState.error = 'Gib einen Benutzernamen ein';
             }
+            widget.setWidget(GetPassword(widget.setWidget));
           }
         )
       ],
@@ -170,6 +169,7 @@ class _GetPasswordState extends State<GetPassword> {
           icon: Icon(Icons.person),
           hintText: 'Passwort',
           obscureText: true,
+          suffixWidget: SizedBox(),
           onChange: (value) {
             _RegisterPageState.password = value;
           },
@@ -179,10 +179,10 @@ class _GetPasswordState extends State<GetPassword> {
           onPressed: () {
             if (_RegisterPageState.password.length >= 6) {
               _RegisterPageState.error = '';
-              widget.setWidget(FinalRegister(widget.setWidget));
             } else {
               _RegisterPageState.error = 'das Passwort ist zu kurz';
             }
+            widget.setWidget(FinalRegister(widget.setWidget));
           },
         )
       ],
@@ -272,27 +272,33 @@ class FinalRegister extends StatelessWidget {
 
 void checkUsername({String username, Function setWidget}) async {
   print('checking username...');
-  setWidget(SizedBox(width: 25, height: 25, child: CircularProgressIndicator(strokeWidth: 2,)));
-  var r = await Requests.get('http://10.0.0.129:3000/checkUsername?username=$username');
-  
-  if (r.content() == 'available') {
-    _RegisterPageState.error = 'Gib etwas ein';
-    setWidget(
-      Icon(
-        Icons.check,
-        color: Colors.greenAccent[400],
-        size: 30,
-      )
-    );
+  if (username.length != 0) {
+    setWidget(SizedBox(width: 25, height: 25, child: CircularProgressIndicator(strokeWidth: 2,)));
+    var r = await Requests.get('http://10.0.0.129:3000/checkUsername?username=$username');
+    
+    if (r.content() == 'available') {
+      _RegisterPageState.error = '';
+      setWidget(
+        Icon(
+          Icons.check,
+          color: Colors.greenAccent[400],
+          size: 30,
+        )
+      );
+    } else {
+      _RegisterPageState.error = 'Der Benutzername wird bereits verwendet...';
+      print(_RegisterPageState.error);
+      setWidget(
+        Icon(
+          Icons.clear,
+          color: Colors.red[700],
+          size: 30,
+        )
+      );
+    }
   } else {
-    _RegisterPageState.error = 'Der Benutzername wird bereits verwendet...';
-    setWidget(
-      Icon(
-        Icons.clear,
-        color: Colors.red[700],
-        size: 30,
-      )
-    );
+      _RegisterPageState.error = 'Der Benutzername ist zu kurz...';
+
   }
 }
 

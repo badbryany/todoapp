@@ -141,8 +141,32 @@ class _HomepageState extends State<Homepage> {
       }
       tasks.add(_tasks[i]);
     }
+    if (tasks.length == 0) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Color(0xff262a34),
+            title: Text('Erstelle eine neue Aufgabenliste!', textAlign: TextAlign.center, style: TextStyle(fontSize: 19),),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('drücke auf das '),
+                Icon(Icons.add),
+                Text(' zum erstellen')
+              ],
+            ),
+            actions: [
+              FlatButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('ok', style: TextStyle(fontWeight: FontWeight.bold))
+              )
+            ],
+          );
+        }
+      );
+    }
   }
-
   @override
   Widget build(BuildContext context) {
    getTasks(true);

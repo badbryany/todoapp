@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:requests/requests.dart';
+
+import '../session.dart';
 
 import '../models/inputField.dart';
 import '../models/submitButton.dart';
@@ -10,14 +14,38 @@ class LoginPage extends StatelessWidget {
 
   LoginPage({@required this.closeContainer});
 
+  String username;
+  String password;
+
   final List<Color> colors = [
     Color(0xff050609),
     Color(0xff131129),
     Color(0xff874FD0)
   ];
 
+  Future<bool> login(String username, String password) async {    
+    var r = await Requests.post(
+      'http://10.0.0.129:3000/login',
+      json: {
+        'username': username,
+        'password': password
+      }
+    );
+    if (r.content() == 'true') {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      prefs.setString('username', username);
+      prefs.setString('password', password);
+
+      print('logged in!');
+    } else {
+      print('no');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    login('oskar', 'oskar123');
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(

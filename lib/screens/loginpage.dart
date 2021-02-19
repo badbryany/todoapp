@@ -6,22 +6,11 @@ import '../models/inputField.dart';
 import '../models/submitButton.dart';
 
 import '../screens/registerpage.dart';
+import '../screens/homepage.dart';
 
-class LoginPage extends StatelessWidget {
-  final Function closeContainer;
+class LoginPage extends StatefulWidget {
 
-  LoginPage({@required this.closeContainer});
-
-  String username;
-  String password;
-
-  final List<Color> colors = [
-    Color(0xff050609),
-    Color(0xff131129),
-    Color(0xff874FD0)
-  ];
-
-  Future<bool> login(String username, String password) async {    
+  static Future<bool> login(String username, String password) async {    
     var r = await Requests.post(
       'http://10.0.0.129:3000/login',
       json: {
@@ -35,15 +24,33 @@ class LoginPage extends StatelessWidget {
       prefs.setString('username', username);
       prefs.setString('password', password);
 
-      print('logged in!');
+      print('you are logged in as $username.\npassword: $password');
+
+      return true;
     } else {
-      print('no');
+      return false;
     }
   }
 
   @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  String username;
+
+  String password;
+
+  String hint = '';
+
+  final List<Color> colors = [
+    Color(0xff050609),
+    Color(0xff131129),
+    Color(0xff874FD0)
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    login('oskar', 'oskar123');
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(
@@ -70,7 +77,7 @@ class LoginPage extends StatelessWidget {
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: closeContainer,
+                      onPressed: () => Navigator.pop(context),
                       icon: Icon(Icons.arrow_back),
                     ),
                     Text('Account', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),)
@@ -96,18 +103,40 @@ class LoginPage extends StatelessWidget {
                     icon: Icon(Icons.person),
                     hintText: 'Benutzername',
                     obscureText: false,
-                    onChange: (value) {},
-                    initialValue: ''
+                    onChange: (value) {
+                      username = value;
+                    },
+                    initialValue: '',
+                    suffixWidget: SizedBox(),
                   ),
                   InputField(
                     icon: Icon(Icons.person),
                     hintText: 'Passwort',
                     obscureText: true,
-                    onChange: (value) {},
+                    onChange: (value) {
+                      password = value;
+                    },
+                    suffixWidget: SizedBox(),
                     initialValue: ''
                   ),
+                  Text(hint, style: TextStyle(color: Colors.red)),
                   SubmitButton(
-                    text: 'Anmelden'
+                    text: 'Anmelden',
+                    onPressed: () async {
+                      bool res = await LoginPage.login(username, password);
+
+                      if (res) {
+                        setState(() {
+                          hint = '';
+                        });
+                        HomePage.loggedIn = true;
+                        Navigator.pop(context);
+                      } else {
+                        setState(() {
+                          hint = 'Benutzername oder Passwort ist falsch';
+                        });
+                      }
+                    },
                   ),
                 ],
               ),

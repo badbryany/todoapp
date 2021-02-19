@@ -233,7 +233,7 @@ class FinalRegister extends StatelessWidget {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Homepage()
+                        builder: (context) => HomePage()
                       ),
                     ),
                   )
@@ -276,7 +276,7 @@ void checkUsername({String username, Function setWidget}) async {
   var r = await Requests.get('http://10.0.0.129:3000/checkUsername?username=$username');
   
   if (r.content() == 'available') {
-    _RegisterPageState.error = '';
+    _RegisterPageState.error = 'Gib etwas ein';
     setWidget(
       Icon(
         Icons.check,

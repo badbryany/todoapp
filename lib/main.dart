@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         fontFamily: 'Poppins'
       ),
-      home: Homepage(),
+      home: HomePage(),
     );
   }
 }

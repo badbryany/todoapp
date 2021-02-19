@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:animations/animations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database_helper.dart';
 import './taskpage.dart';
 import '../widgets.dart';
 import '../models/task.dart';
+import './profile.dart';
 import './loginpage.dart';
 
-class Homepage extends StatefulWidget {
+class HomePage extends StatefulWidget {
+  static bool loggedIn = false;
+
   @override
-  _HomepageState createState() => _HomepageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _HomePageState extends State<HomePage> {  
   DatabaseHelper _dbHelper = DatabaseHelper();
 
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
@@ -169,7 +173,19 @@ class _HomepageState extends State<Homepage> {
   }
   @override
   Widget build(BuildContext context) {
-   getTasks(true);
+    getTasks(true);
+    SharedPreferences.getInstance().then((instance) {
+      String username = instance.getString('username');
+      String password = instance.getString('password');
+
+      if (username != null && password != null) {
+        LoginPage.login(username, password).then((r) {
+          HomePage.loggedIn = r;
+        });
+      } else {
+        print('no data to login');
+      }
+    });
 
     return Scaffold(
       body: SafeArea(
@@ -230,7 +246,7 @@ class _HomepageState extends State<Homepage> {
                         return SvgPicture.asset('assets/icons/avatar.svg', width: 35);
                       },
                       openBuilder: (context, closeContainer) {
-                        return LoginPage(
+                        return Profile(
                           closeContainer: closeContainer,
                         );
                       },

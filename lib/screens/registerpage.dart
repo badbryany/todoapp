@@ -273,7 +273,7 @@ class FinalRegister extends StatelessWidget {
 void checkUsername({String username, Function setWidget}) async {
   print('checking username...');
   if (username.length != 0) {
-    setWidget(SizedBox(width: 25, height: 25, child: CircularProgressIndicator(strokeWidth: 2,)));
+    setWidget(SizedBox(width: 25, height: 25, child: CircularProgressIndicator(strokeWidth: 3,)));
     var r = await Requests.get('http://10.0.0.129:3000/checkUsername?username=$username');
     
     if (r.content() == 'available') {

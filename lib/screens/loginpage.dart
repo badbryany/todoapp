@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                     suffixWidget: SizedBox(),
                   ),
                   InputField(
-                    icon: Icon(Icons.person),
+                    icon: Icon(Icons.lock),
                     hintText: 'Passwort',
                     obscureText: true,
                     onChange: (value) {

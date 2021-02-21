@@ -27,10 +27,10 @@ class InputField extends StatelessWidget {
         decoration: InputDecoration(
           suffix: Container(
             margin: EdgeInsets.only(right: 25),
-            child: Center(child: suffixWidget)
+            child: suffixWidget
           ),
           labelText: hintText,
-          labelStyle: TextStyle(fontSize: 14, color: Color(0xff63f1b3)),
+          labelStyle: TextStyle(fontSize: 14),
           hintText: hintText,
           prefixIcon: icon,
           border: InputBorder.none,

@@ -1,10 +1,13 @@
 import "package:path/path.dart";
 import "package:sqflite/sqflite.dart";
 
+import './server.dart';
+
 import "models/task.dart";
 import "models/todo.dart";
 
 class DatabaseHelper {
+    Server server = new Server();
 
   Future<Database> database() async {
     return openDatabase(
@@ -25,23 +28,28 @@ class DatabaseHelper {
     await _db.insert("tasks", task.toMap(), conflictAlgorithm: ConflictAlgorithm.replace).then((value) {
       taskId = value;
     });
+    server.newTask(task, taskId);
+
     return taskId;
   }
   
   Future<void> updateTaskTitle(int id, String title) async {
     Database _db = await database();
-    await _db.rawUpdate('UPDATE tasks SET title = "$title" WHERE id = "$id"');
+    await _db.rawUpdate('UPDATE tasks SET title="$title" WHERE id="$id"');
+    server.updateTaskTitle(id, title);
   }
 
   Future<void> updateTaskDescription(int id, String description) async {
     Database _db = await database();
     await _db.rawUpdate('UPDATE tasks SET description = "$description" WHERE id = "$id"');
+    server.updateTaskDescription(id, description);
+
   }
 
   Future<void> insertTodo(Todo todo) async {
     Database _db = await database();
-    print(todo.toMap());
-    await _db.insert("todo", todo.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    int todoId = await _db.insert("todo", todo.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    server.addToDo(todo, todoId);
   }
 
   Future<List<Task>> getTasks() async {
@@ -71,25 +79,36 @@ class DatabaseHelper {
   Future<void> updateTodoDone(int id, int isDone) async {
     Database _db = await database();
     await _db.rawUpdate('UPDATE todo SET isDone = "$isDone" WHERE id = "$id"');
+    server.updateToDoDone(id, isDone);
   }
 
-  Future<void> updateTodo(int id, String title, String description, double priority, String category) async {
+  Future<void> updateTodo(int id, String title, String description, double priority, String category, int taskId) async {
     Database _db = await database();
     await _db.rawUpdate('UPDATE todo SET title="$title" WHERE id = "$id"');
     await _db.rawUpdate('UPDATE todo SET description="$description" WHERE id = "$id"');
     await _db.rawUpdate('UPDATE todo SET priority="$priority" WHERE id = "$id"');
     await _db.rawUpdate('UPDATE todo SET category="$category" WHERE id = "$id"');
-    print("successfuly updated");
+    Todo todo = new Todo(
+      taskId: taskId,
+      id: id,
+      title: title,
+      description: description,
+      priority: priority.toInt(),
+      category: category
+    );
+    server.updateToDo(todo);
   }
 
   Future<void> deleteTask(int id) async {
     Database _db = await database();
     await _db.rawDelete('DELETE FROM tasks WHERE id = "$id"');
     await _db.rawDelete('DELETE FROM todo WHERE taskId = "$id"');
+    server.removeTask(id);
   }
 
   Future<void> deleteToDo(int id) async {
     Database _db = await database();
     await _db.rawDelete('DELETE FROM todo WHERE id = "$id"');
+    server.removeToDo(id);
   }
 }

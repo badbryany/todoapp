@@ -132,7 +132,6 @@ class _TaskpageState extends State<Taskpage>{
     });
 
     double _priority = todo.priority.toDouble();
-    print(todo.toMap());
     String _reminder;
     if (todo.reminder != 'null' && todo.reminder != null && todo.reminder.runtimeType != Null) {
       var __dateTime = DateTime.parse(todo.reminder);
@@ -150,7 +149,6 @@ class _TaskpageState extends State<Taskpage>{
     String _title = todo.title;
     String _description = todo.description;
     String __category = todo.category;
-    print(_categories);
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -322,7 +320,7 @@ class _TaskpageState extends State<Taskpage>{
                   Container(
                     child: InkWell(
                       onTap: () {
-                        _dbHelper.updateTodo(todo.id, _title, _description, _priority, _category);
+                        _dbHelper.updateTodo(todo.id, _title, _description, _priority, _category, todo.taskId);
 
                         Navigator.pop(context);
                         setState(() {});
@@ -639,7 +637,6 @@ class _TaskpageState extends State<Taskpage>{
 
   @override
   Widget build(BuildContext context) {
-    print(widget.task.id);
     List<dynamic> toDoSettings = [
       {'icon': Icon(Icons.subject, size: 30, color: Color(0xffbf96fa)), 'onTap': () => setState(() {_description = !_description; _addHeight = 230;})},
       {'icon': Icon(Icons.alarm, color: Color(0xffbf96fa), size: 30), 'onTap': pickDate},

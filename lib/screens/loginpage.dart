@@ -8,11 +8,16 @@ import '../models/submitButton.dart';
 import '../screens/registerpage.dart';
 import '../screens/homepage.dart';
 
+import '../server.dart';
+
 class LoginPage extends StatefulWidget {
+  final Function getTasks;
+
+  LoginPage(this.getTasks);
 
   static Future<bool> login(String username, String password) async {    
     var r = await Requests.post(
-      'http://10.0.0.129:3000/login',
+      '${Server().url}/login',
       json: {
         'username': username,
         'password': password
@@ -130,6 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                           hint = '';
                         });
                         HomePage.loggedIn = true;
+                        widget.getTasks(true);
                         Navigator.pop(context);
                       } else {
                         setState(() {

@@ -11,8 +11,9 @@ import '../models/submitButton.dart';
 
 class Profile extends StatefulWidget {
   final Function closeContainer;
+  final Function getTasks;
 
-  Profile({@required this.closeContainer});
+  Profile({@required this.closeContainer, this.getTasks});
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -91,7 +92,7 @@ class _ProfileState extends State<Profile> {
                           ),
                           IconButton(
                             icon: Icon(Icons.settings),
-                            onPressed: () {print('settings');},
+                            onPressed: () {SharedPreferences.getInstance().then((i) => i.clear());},
                           ),
                         ],
                       ),
@@ -170,7 +171,7 @@ class _ProfileState extends State<Profile> {
         ),
       );
     } else {
-      return LoginPage();
+      return LoginPage(widget.getTasks);
     }
   }
 }

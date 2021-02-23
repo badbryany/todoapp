@@ -7,6 +7,8 @@ import './homepage.dart';
 import '../models/inputField.dart';
 import '../models/submitButton.dart';
 
+import '../server.dart';
+
 class RegisterPage extends StatefulWidget {
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -274,7 +276,7 @@ void checkUsername({String username, Function setWidget}) async {
   print('checking username...');
   if (username.length != 0) {
     setWidget(SizedBox(width: 25, height: 25, child: CircularProgressIndicator(strokeWidth: 3,)));
-    var r = await Requests.get('http://10.0.0.129:3000/checkUsername?username=$username');
+    var r = await Requests.get('${Server().url}/checkUsername?username=$username');
     
     if (r.content() == 'available') {
       _RegisterPageState.error = '';
@@ -305,7 +307,7 @@ void checkUsername({String username, Function setWidget}) async {
 Future<bool> register(String username, String password) async {
   print('try to log in...');
   var r = await Requests.post(
-    'http://10.0.0.129:3000/register',
+    '${Server().url}/register',
     json: {
       'username': username,
       'password': password

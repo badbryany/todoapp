@@ -907,7 +907,7 @@ class _TaskpageState extends State<Taskpage>{
                                           category: _category,
                                           reminder: _dateTime.toString(),
                                         );
-                                        await _dbHelper.insertTodo(_newTodo);
+                                        await _dbHelper.insertTodo(_newTodo, true);
                                         if (_dateTime != null) {
                                           _showNotification(
                                             notifocationTime: _dateTime,

@@ -174,20 +174,19 @@ class _HomePageState extends State<HomePage> {
   
   @override
   Widget build(BuildContext context) {
-    getTasks(true);
-    SharedPreferences.getInstance().then((instance) {
+    SharedPreferences.getInstance().then((instance) async {
       String username = instance.getString('username');
       String password = instance.getString('password');
 
       if (username != null && password != null) {
-        LoginPage.login(username, password).then((r) {
+        await LoginPage.login(username, password).then((r) {
           HomePage.loggedIn = r;
         });
       } else {
         print('no data to login');
       }
+      getTasks(true);
     });
-
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -229,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                     InkWell(
                       onTap: () async {
                         Task _newTask = Task(title: '', description: '');
-                        await _dbHelper.insertTask(_newTask);
+                        await _dbHelper.insertTask(_newTask, true);
                         listKey.currentState.insertItem(tasks.length);
                         tasks.insert(tasks.length, _newTask);
 
@@ -249,6 +248,7 @@ class _HomePageState extends State<HomePage> {
                       openBuilder: (context, closeContainer) {
                         return Profile(
                           closeContainer: closeContainer,
+                          getTasks: getTasks,
                         );
                       },
                     ),

@@ -7,7 +7,7 @@ import "models/task.dart";
 import "models/todo.dart";
 
 class DatabaseHelper {
-    Server server = new Server();
+  Server server = new Server();
 
   Future<Database> database() async {
     return openDatabase(
@@ -22,13 +22,16 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> insertTask(Task task) async {
+  Future<int> insertTask(Task task, bool shouldSync) async {
     int taskId = 0;
     Database _db = await database();
     await _db.insert("tasks", task.toMap(), conflictAlgorithm: ConflictAlgorithm.replace).then((value) {
       taskId = value;
     });
-    server.newTask(task, taskId);
+
+    if (shouldSync) {
+      server.newTask(task, taskId);
+    }
 
     return taskId;
   }
@@ -46,23 +49,33 @@ class DatabaseHelper {
 
   }
 
-  Future<void> insertTodo(Todo todo) async {
+  Future<void> insertTodo(Todo todo, bool shouldSync) async {
     Database _db = await database();
     int todoId = await _db.insert("todo", todo.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
-    server.addToDo(todo, todoId);
+    if (shouldSync) {
+      server.addToDo(todo, todoId);
+    }
   }
 
   Future<List<Task>> getTasks() async {
     Database _db = await database();
     List<Map<String, dynamic>> taskMap = await _db.query("tasks");
-    return List.generate(taskMap.length, (index) {
-      return Task(id: taskMap[index]["id"], title: taskMap[index]["title"], description: taskMap[index]["description"]);
+
+    var serverTasks = await server.getTasks();
+
+    var newTaskMap = await server.compareTasks(taskMap, serverTasks);
+
+    return List.generate(newTaskMap.length, (index) {
+      return Task(id: newTaskMap[index]["id"], title: newTaskMap[index]["title"], description: newTaskMap[index]["description"]);
     });
   }
 
   Future<List<Todo>> getTodo(int taskId) async {
     Database _db = await database();
     List<Map<String, dynamic>> todoMap = await _db.rawQuery('SELECT * FROM todo WHERE taskId = $taskId');
+
+    server.getTaskTodos(taskId);
+
     return List.generate(todoMap.length, (index) {
       return Todo(id: todoMap[index]["id"], title: todoMap[index]["title"], taskId: todoMap[index]["taskId"], isDone: todoMap[index]["isDone"], description: todoMap[index]["description"], priority: todoMap[index]["priority"], category: todoMap[index]["category"], reminder: todoMap[index]["reminder"]);
     });

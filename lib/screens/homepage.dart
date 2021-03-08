@@ -141,7 +141,7 @@ class _HomePageState extends State<HomePage> {
 
     for (int i = 0; i < _tasks.length; i++) {
       if (foo) {
-        listKey.currentState.insertItem(i);
+        listKey.currentState!.insertItem(i);
       }
       tasks.add(_tasks[i]);
     }
@@ -229,7 +229,7 @@ class _HomePageState extends State<HomePage> {
                       onTap: () async {
                         Task _newTask = Task(title: '', description: '');
                         await _dbHelper.insertTask(_newTask, true);
-                        listKey.currentState.insertItem(tasks.length);
+                        listKey.currentState!.insertItem(tasks.length);
                         tasks.insert(tasks.length, _newTask);
 
                         getTasks(false);
@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                           FlatButton(
                                             onPressed: () {
-                                              listKey.currentState.removeItem(index, (context, animation) {
+                                              listKey.currentState!.removeItem(index, (context, animation) {
                                                 return SizeTransition(
                                                   axis: Axis.vertical,
                                                   sizeFactor: animation,

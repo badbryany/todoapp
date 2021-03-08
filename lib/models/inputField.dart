@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class InputField extends StatelessWidget {
-  final Icon icon;
-  final String hintText;
-  final bool obscureText;
-  final Function onChange;
-  final String initialValue;
-  final Widget suffixWidget;
+  final Icon? icon;
+  final String? hintText;
+  final bool? obscureText;
+  final Function? onChange;
+  final String? initialValue;
+  final Widget? suffixWidget;
 
   InputField({this.icon, this.hintText, this.obscureText, this.onChange, this.initialValue, this.suffixWidget});
   
@@ -22,7 +22,7 @@ class InputField extends StatelessWidget {
         color: Color(0xff262a34),
       ),
       child: TextFormField(
-        obscureText: obscureText,
+        obscureText: obscureText!,
         initialValue: initialValue,
         decoration: InputDecoration(
           suffix: Container(
@@ -35,7 +35,7 @@ class InputField extends StatelessWidget {
           prefixIcon: icon,
           border: InputBorder.none,
         ),
-        onChanged: onChange,
+        onChanged: onChange as void Function(String)?,
       ),
     );
   }

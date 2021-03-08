@@ -12,10 +12,10 @@ class Server {
   final String url = 'http://10.0.0.101:3000';
 
   // general functions
-  Future<List<dynamic>> compareTasks(
-      List<dynamic> taskMap, List<dynamic> serverTasks) async {
+  Future<List<dynamic>?> compareTasks(
+      List<dynamic> taskMap, List<dynamic>? serverTasks) async {
     if (HomePage.loggedIn) {
-      if (taskMap.length > serverTasks.length ||
+      if (taskMap.length > serverTasks!.length ||
           taskMap.length == serverTasks.length) {
         // more Lists at the Client as at the Server
         int difference = taskMap.length - serverTasks.length;
@@ -69,7 +69,7 @@ class Server {
 
         // get ToDos of the Task
         List<dynamic> serverToDos =
-            await this.getTaskTodos(serverTasks[i]['id']);
+            await (this.getTaskTodos(serverTasks[i]['id']) as List<dynamic>);
         List<dynamic> clientToDos = await _dbHelper.getTodos();
 
         for (int i = 0; i < serverToDos.length; i++) {
@@ -100,7 +100,7 @@ class Server {
   }
 
   // get all data from the server
-  Future<List<dynamic>> getTasks() async {
+  Future<List<dynamic>?> getTasks() async {
     if (HomePage.loggedIn) {
       var res = await Requests.get('${Server().url}/getTasks');
       if (res.content() != 'bad request' || res.content() != 'no session') {
@@ -111,7 +111,7 @@ class Server {
     }
   }
 
-  Future<List<dynamic>> getTaskTodos(int taskId) async {
+  Future<List<dynamic>?> getTaskTodos(int? taskId) async {
     if (HomePage.loggedIn) {
       var res = await Requests.get('$url/getTaskToDos',
           queryParameters: {'task_id': taskId});
@@ -120,7 +120,7 @@ class Server {
   }
 
   // backup all on the server
-  newTask(Task task, int taskId) async {
+  newTask(Task task, int? taskId) async {
     if (HomePage.loggedIn) {
       var res = await Requests.post('$url/insertTask', json: {
         'id': taskId,
@@ -131,7 +131,7 @@ class Server {
     }
   }
 
-  updateTaskTitle(int id, String title) async {
+  updateTaskTitle(int? id, String? title) async {
     if (HomePage.loggedIn) {
       var res = await Requests.post('$url/updateTask', json: {
         'id': id,
@@ -141,7 +141,7 @@ class Server {
     }
   }
 
-  updateTaskDescription(int id, String description) async {
+  updateTaskDescription(int? id, String? description) async {
     if (HomePage.loggedIn) {
       var res = await Requests.post('$url/updateTask', json: {
         'id': id,
@@ -151,7 +151,7 @@ class Server {
     }
   }
 
-  removeTask(int id) async {
+  removeTask(int? id) async {
     if (HomePage.loggedIn) {
       var res = await Requests.post('$url/removeTask', json: {
         'user_task_id': id,
@@ -194,7 +194,7 @@ class Server {
     }
   }
 
-  updateToDoDone(int id, int isDone) async {
+  updateToDoDone(int? id, int isDone) async {
     if (HomePage.loggedIn) {
       var res = await Requests.post('$url/updateToDoDone', json: {
         'todo_id': id,
@@ -204,7 +204,7 @@ class Server {
     }
   }
 
-  removeToDo(int id) async {
+  removeToDo(int? id) async {
     if (HomePage.loggedIn) {
       var res = await Requests.post('$url/removeToDo', json: {
         'todo_id': id,

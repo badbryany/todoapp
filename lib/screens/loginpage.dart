@@ -11,18 +11,18 @@ import '../screens/homepage.dart';
 import '../server.dart';
 
 class LoginPage extends StatefulWidget {
-  final Function getTasks;
+  final Function? getTasks;
 
   LoginPage(this.getTasks);
 
-  static Future<bool> login(String username, String password) async {
+  static Future<bool> login(String? username, String? password) async {
     var r = await Requests.post('${Server().url}/login',
         json: {'username': username, 'password': password});
     if (r.content() == 'true') {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      prefs.setString('username', username);
-      prefs.setString('password', password);
+      prefs.setString('username', username!);
+      prefs.setString('password', password!);
 
       print('you are logged in as $username.\npassword: $password');
 
@@ -37,9 +37,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String username;
+  String? username;
 
-  String password;
+  String? password;
 
   String hint = '';
 
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                               hint = '';
                             });
                             HomePage.loggedIn = true;
-                            widget.getTasks(true);
+                            widget.getTasks!(true);
                             Navigator.pop(context);
                           } else {
                             setState(() {

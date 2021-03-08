@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import './models/todo.dart';
 import './database_helper.dart';
 class TaskCardWidget extends StatefulWidget {
-  final String title;
-  final String desc;
-  final int taskId;
+  final String? title;
+  final String? desc;
+  final int? taskId;
 
   TaskCardWidget({this.title, this.desc, this.taskId});
 
@@ -17,7 +17,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
   DatabaseHelper _dbHelper = new DatabaseHelper();
 
   Future<String> getToDos(id) async {
-    List<Todo> toDos;
+    late List<Todo> toDos;
     int done = 0;
     await _dbHelper.getTodo(id).then((value) => toDos = value);
 
@@ -33,7 +33,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
     }
   }
 
-  Color whichColor(String doneTasks) {
+  Color? whichColor(String doneTasks) {
     if (doneTasks == '0/0') {
       return Color(0xfff6ca6c);
     }
@@ -76,7 +76,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
               Icon(Icons.topic),
               SizedBox(width: 20),
               Text(
-                widget.title == '' ? "---": widget.title,
+                widget.title == '' ? "---": widget.title!,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -89,7 +89,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
               top: 5,
             ),
             child: Text(
-              (widget.desc == '' || widget.desc == null) ? "---" : widget.desc,
+              (widget.desc == '' || widget.desc == null) ? "---" : widget.desc!,
               style: TextStyle(
                 fontSize: 14,
                 color: Color(0xFF86829D),
@@ -152,14 +152,14 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
 }
 
 class TodoWidget extends StatefulWidget {
-  final String text;
-  final String description;
+  final String? text;
+  final String? description;
   final bool isDone;
   final Function removeToDo;
-  final String reminder;
-  final int priority;
+  final String? reminder;
+  final int? priority;
 
-  TodoWidget({this.text, @required this.isDone, @required this.removeToDo, this.description, this.reminder, this.priority});
+  TodoWidget({this.text, required this.isDone, required this.removeToDo, this.description, this.reminder, this.priority});
 
   @override
   _TodoWidgetState createState() => _TodoWidgetState();
@@ -207,13 +207,13 @@ class _TodoWidgetState extends State<TodoWidget>{
             ...widgets(),
           ],
         ),
-        subtitle: widget.description != null ? Text(widget.description, style: TextStyle(
+        subtitle: widget.description != null ? Text(widget.description!, style: TextStyle(
           fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
           decoration: widget.isDone ? TextDecoration.lineThrough : null
         )) : null,
         trailing: IconButton(
           icon: Icon(Icons.delete),
-          onPressed: widget.removeToDo,
+          onPressed: widget.removeToDo as void Function()?,
         ),
       ),
     );

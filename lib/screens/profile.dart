@@ -11,9 +11,9 @@ import '../models/submitButton.dart';
 
 class Profile extends StatefulWidget {
   final Function closeContainer;
-  final Function getTasks;
+  final Function? getTasks;
 
-  Profile({@required this.closeContainer, this.getTasks});
+  Profile({required this.closeContainer, this.getTasks});
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -84,7 +84,7 @@ class _ProfileState extends State<Profile> {
                           Row(      
                             children: [
                               FlatButton(
-                                onPressed: widget.closeContainer,
+                                onPressed: widget.closeContainer as void Function()?,
                                 child: Icon(Icons.arrow_back),
                               ),
                               Text('Mein Profil', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),

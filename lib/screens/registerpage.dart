@@ -7,7 +7,7 @@ import './homepage.dart';
 import '../models/inputField.dart';
 import '../models/submitButton.dart';
 
-import '../server.dart';
+import '../global/server.dart';
 
 class RegisterPage extends StatefulWidget {
   @override

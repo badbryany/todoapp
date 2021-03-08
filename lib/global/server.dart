@@ -1,12 +1,12 @@
 import 'package:requests/requests.dart';
 import 'dart:convert';
 
-import './screens/homepage.dart';
+import '../screens/homepage.dart';
 
-import './database_helper.dart';
+import '../database_helper.dart';
 
-import './models/task.dart';
-import './models/todo.dart';
+import '../models/task.dart';
+import '../models/todo.dart';
 
 class Server {
   final String url = 'http://10.0.0.101:3000';

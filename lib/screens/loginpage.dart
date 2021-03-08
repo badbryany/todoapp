@@ -8,7 +8,7 @@ import '../models/submitButton.dart';
 import '../screens/registerpage.dart';
 import '../screens/homepage.dart';
 
-import '../server.dart';
+import '../global/server.dart';
 
 class LoginPage extends StatefulWidget {
   final Function? getTasks;

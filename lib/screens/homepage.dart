@@ -319,7 +319,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                             padding: EdgeInsets.all(10),
                             child: Icon(Icons.add))),
-                    OpenContainer(
+                    /*OpenContainer(
                       closedColor: colors[1].withOpacity(0.1),
                       openColor: Colors.transparent.withOpacity(0),
                       closedBuilder: (context, openContainer) {
@@ -332,7 +332,7 @@ class _HomePageState extends State<HomePage> {
                           getTasks: getTasks,
                         );
                       },
-                    ),
+                    ),*/
                   ],
                 ),
               ),

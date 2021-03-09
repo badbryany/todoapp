@@ -40,7 +40,25 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     foo = _connectivity.onConnectivityChanged.listen((change) async {
-      HomePage.connection = await Server().checkInternet(context, true);
+      bool _connection = await Server().checkInternet(context, true);
+      setState(() {
+        HomePage.connection = _connection;
+        _connection == false ? HomePage.loggedIn = false : null;
+      });
+      if (HomePage.connection) {
+        SharedPreferences.getInstance().then((instance) async {
+          String username = instance.getString('username');
+          String password = instance.getString('password');
+
+          if (username != null && password != null) {
+            await LoginPage.login(username, password).then((r) {
+              HomePage.loggedIn = r;
+            });
+          } else {
+            print('no data to login');
+          }
+        });
+      }
     });
 
     Server().checkInternet(context, false).then((r) {

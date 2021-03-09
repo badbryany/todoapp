@@ -19,6 +19,7 @@ dependencies:
   animations: ^2.0.0
   requests: ^3.3.0
   device_info: ^2.0.0
+  connectivity: ^3.0.2
 
   
 dev_dependencies:

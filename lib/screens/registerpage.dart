@@ -102,8 +102,8 @@ class GetUsername extends StatefulWidget {
 }
 
 class _GetUsernameState extends State<GetUsername> {
-  Widget? hint;
-  Widget? suffixWidget;
+  Widget? hint = SizedBox();
+  Widget? suffixWidget = SizedBox();
 
   void setSuffixWidget(Widget newWidget) {
     setState(() {
@@ -282,7 +282,7 @@ void checkUsername({required String username, Function? setWidget}) async {
         )));
     var r =
         await Requests.get('${Server().url}/checkUsername?username=$username');
-
+    print(r.content());
     if (r.content() == 'available') {
       _RegisterPageState.error = '';
       setWidget(Icon(

@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
 import 'dart:convert';
 
 import '../screens/homepage.dart';
+
+import 'package:connectivity/connectivity.dart';
 
 import '../database_helper.dart';
 
@@ -12,6 +15,53 @@ class Server {
   final String url = 'http://10.0.0.101:3000';
 
   // general functions
+  Future<bool> checkInternet(BuildContext context, bool changed) async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.signal_wifi_off,
+              color: Colors.red[100],
+            ),
+            SizedBox(width: 10),
+            Text(
+              'du bist offline',
+              style: TextStyle(color: Colors.red[100]),
+            )
+          ],
+        ),
+        duration: Duration(seconds: 5),
+        backgroundColor: Color(0xff262a34),
+      ));
+      return false;
+    } else if (changed) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.signal_wifi_4_bar_rounded,
+              color: Colors.green[200],
+            ),
+            SizedBox(width: 10),
+            Text(
+              'verbunden',
+              style: TextStyle(color: Colors.green[200]),
+            )
+          ],
+        ),
+        duration: Duration(seconds: 2),
+        backgroundColor: Color(0xff262a34),
+      ));
+    }
+    return true;
+  }
+
   Future<List<dynamic>?> compareTasks(
       List<dynamic> taskMap, List<dynamic>? serverTasks) async {
     if (HomePage.loggedIn) {
@@ -69,7 +119,7 @@ class Server {
 
         // get ToDos of the Task
         List<dynamic> serverToDos =
-            await (this.getTaskTodos(serverTasks[i]['id']) as List<dynamic>);
+            (await this.getTaskTodos(serverTasks[i]['id']) as List<dynamic>);
         List<dynamic> clientToDos = await _dbHelper.getTodos();
 
         for (int i = 0; i < serverToDos.length; i++) {

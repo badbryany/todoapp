@@ -144,8 +144,9 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SvgPicture.network(
-                                'https://www.flaticon.com/svg/vstatic/svg/25/25231.svg?token=exp=1612963422~hmac=dbf414c258db04df32a174a6389d431f',
-                                width: 30),
+                              'https://www.flaticon.com/svg/vstatic/svg/25/25231.svg?token=exp=1612963422~hmac=dbf414c258db04df32a174a6389d431f',
+                              width: 30,
+                            ),
                             SizedBox(width: 20),
                             Text(
                               'badbryany',
@@ -161,8 +162,9 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SvgPicture.network(
-                                'https://upload.wikimedia.org/wikipedia/commons/e/ef/Stack_Overflow_icon.svg',
-                                width: 30),
+                              'https://upload.wikimedia.org/wikipedia/commons/e/ef/Stack_Overflow_icon.svg',
+                              width: 30,
+                            ),
                             SizedBox(width: 20),
                             Text(
                               'oskarkel',
@@ -274,16 +276,17 @@ class _HomePageState extends State<HomePage> {
           height: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 24.0),
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colors[1],
-              colors[0],
-              colors[1],
-            ],
-            stops: [0, 0.8, 1],
-          )),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colors[1],
+                colors[0],
+                colors[1],
+              ],
+              stops: [0, 0.8, 1],
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -308,18 +311,20 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(),
                     InkWell(
-                        onTap: () async {
-                          Task _newTask = Task(title: '', description: '');
-                          await _dbHelper.insertTask(_newTask, true);
-                          listKey.currentState!.insertItem(tasks.length);
-                          tasks.insert(tasks.length, _newTask);
+                      onTap: () async {
+                        Task _newTask = Task(title: '', description: '');
+                        await _dbHelper.insertTask(_newTask, true);
+                        listKey.currentState!.insertItem(tasks.length);
+                        tasks.insert(tasks.length, _newTask);
 
-                          getTasks(false);
-                        },
-                        child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Icon(Icons.add))),
-                    /*OpenContainer(
+                        getTasks(false);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: Icon(Icons.add),
+                      ),
+                    ),
+                    OpenContainer(
                       closedColor: colors[1].withOpacity(0.1),
                       openColor: Colors.transparent.withOpacity(0),
                       closedBuilder: (context, openContainer) {
@@ -332,7 +337,7 @@ class _HomePageState extends State<HomePage> {
                           getTasks: getTasks,
                         );
                       },
-                    ),*/
+                    ),
                   ],
                 ),
               ),
@@ -369,55 +374,55 @@ class _HomePageState extends State<HomePage> {
                               child: InkWell(
                                 onLongPress: () async {
                                   showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          backgroundColor: Color(0xff262a34),
-                                          content: Text(
-                                            'Willst du die Liste wirklich löschen?',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20),
-                                          ),
-                                          actions: [
-                                            FlatButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
-                                                child: Text('abbrechen')),
-                                            FlatButton(
-                                                onPressed: () {
-                                                  listKey.currentState!
-                                                      .removeItem(
-                                                    index,
-                                                    (context, animation) {
-                                                      return SizeTransition(
-                                                          axis: Axis.vertical,
-                                                          sizeFactor: animation,
-                                                          child: TaskCardWidget(
-                                                            taskId:
-                                                                tasks[index].id,
-                                                            title: tasks[index]
-                                                                .title,
-                                                            desc: tasks[index]
-                                                                .description,
-                                                          ));
-                                                    },
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        backgroundColor: Color(0xff262a34),
+                                        content: Text(
+                                          'Willst du die Liste wirklich löschen?',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text('abbrechen')),
+                                          TextButton(
+                                            onPressed: () {
+                                              listKey.currentState!.removeItem(
+                                                index,
+                                                (context, animation) {
+                                                  return SizeTransition(
+                                                    axis: Axis.vertical,
+                                                    sizeFactor: animation,
+                                                    child: TaskCardWidget(
+                                                      taskId: tasks[index].id,
+                                                      title: tasks[index].title,
+                                                      desc: tasks[index]
+                                                          .description,
+                                                    ),
                                                   );
-
-                                                  _dbHelper.deleteTask(
-                                                      tasks[index].id);
-                                                  tasks.removeAt(index);
-
-                                                  getTasks(false);
-                                                  Navigator.pop(context);
                                                 },
-                                                child: Text('löschen',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold))),
-                                          ],
-                                        );
-                                      });
+                                              );
+                                              _dbHelper
+                                                  .deleteTask(tasks[index].id);
+                                              tasks.removeAt(index);
+
+                                              getTasks(false);
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              'löschen',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
                                 },
                                 onTap: openContainer,
                                 child: TaskCardWidget(

@@ -107,13 +107,13 @@ class _TaskpageState extends State<Taskpage> {
   }
 
   Future<void> pickDate() async {
-    DateTime __dateTime = await (showDatePicker(
+    DateTime __dateTime = (await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2050),
     ) as DateTime);
-    var _time = await (showTimePicker(
+    var _time = (await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1),
     ) as TimeOfDay);

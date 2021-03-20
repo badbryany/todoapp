@@ -122,25 +122,32 @@ class Server {
             (await this.getTaskTodos(serverTasks[i]['id']) as List<dynamic>);
         List<dynamic> clientToDos = await _dbHelper.getTodos();
 
-        for (int i = 0; i < serverToDos.length; i++) {
-          bool shouldInsert = true;
-          for (int j = 0; j < clientToDos.length; j++) {
-            if (clientToDos[j].id == serverToDos[i]['todo_id']) {
-              shouldInsert = false;
-            }
+        if (serverToDos.length <= clientToDos.length) {
+          // more todos at the client
+          for (int i = 0; i < clientToDos.length; i++) {
+            this.addToDo(clientToDos[i], clientToDos[i].id);
           }
-          if (shouldInsert) {
-            Todo _insertToDo = Todo(
-              id: serverToDos[i]['todo_id'],
-              taskId: serverToDos[i]['user_task_id'],
-              title: serverToDos[i]['title'],
-              description: serverToDos[i]['description'],
-              category: serverToDos[i]['category'],
-              isDone: serverToDos[i]['isDone'],
-              priority: serverToDos[i]['priority'],
-              reminder: serverToDos[i]['reminder'],
-            );
-            _dbHelper.insertTodo(_insertToDo, false);
+        } else {
+          for (int i = 0; i < serverToDos.length; i++) {
+            bool shouldInsert = true;
+            for (int j = 0; j < clientToDos.length; j++) {
+              if (clientToDos[j].id == serverToDos[i]['todo_id']) {
+                shouldInsert = false;
+              }
+            }
+            if (shouldInsert) {
+              Todo _insertToDo = Todo(
+                id: serverToDos[i]['todo_id'],
+                taskId: serverToDos[i]['user_task_id'],
+                title: serverToDos[i]['title'],
+                description: serverToDos[i]['description'],
+                category: serverToDos[i]['category'],
+                isDone: serverToDos[i]['isDone'],
+                priority: serverToDos[i]['priority'],
+                reminder: serverToDos[i]['reminder'],
+              );
+              _dbHelper.insertTodo(_insertToDo, false);
+            }
           }
         }
       }

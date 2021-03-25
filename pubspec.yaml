@@ -15,14 +15,11 @@ dependencies:
   shared_preferences: ^0.5.4
   sqflite: ^2.0.0+2
   path: ^1.8.0
-  flutter_local_notifications: 5.0.0-nullsafety.1 
+  flutter_local_notifications: ^5.0.0 
   animations: ^2.0.0
   requests: ^3.3.0
   device_info: ^2.0.0
   connectivity: ^3.0.2
-
-  #for the appicon
-  #flutter_launcher_icons: ^0.9.0
 
   
 dev_dependencies:

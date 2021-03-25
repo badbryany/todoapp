@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'dart:math';
+
 import './models/todo.dart';
 import './database_helper.dart';
+
 class TaskCardWidget extends StatefulWidget {
   final String? title;
   final String? desc;
-  final int? taskId;
+  final int taskId;
 
-  TaskCardWidget({this.title, this.desc, this.taskId});
+  TaskCardWidget({this.title, this.desc, required this.taskId});
 
   @override
   _TaskCardWidgetState createState() => _TaskCardWidgetState();
@@ -15,6 +18,8 @@ class TaskCardWidget extends StatefulWidget {
 
 class _TaskCardWidgetState extends State<TaskCardWidget> {
   DatabaseHelper _dbHelper = new DatabaseHelper();
+
+  String todos = '';
 
   Future<String> getToDos(id) async {
     late List<Todo> toDos;
@@ -33,21 +38,12 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
     }
   }
 
-  Color? whichColor(String doneTasks) {
-    if (doneTasks == '0/0') {
-      return Color(0xfff6ca6c);
-    }
-    if (doneTasks.split('/')[0] == doneTasks.split('/')[1]) {
-      return Colors.green[400];
-    }
-    return Color(0xaa53e4df);
-  }
-
   double whichWidth(String doneTasks) {
     if (doneTasks.split('/')[0] == '0') {
       return 0;
     }
-    return (100 / int.parse(doneTasks.split('/')[1])) * int.parse(doneTasks.split('/')[0]);
+    return (100 / int.parse(doneTasks.split('/')[1])) *
+        int.parse(doneTasks.split('/')[0]);
     /*if (doneTasks == '0/0') {
       return 0;
     }
@@ -58,6 +54,12 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var colors = [
+      Theme.of(context).canvasColor,
+      Theme.of(context).focusColor,
+      Theme.of(context).primaryColor,
+      Theme.of(context).buttonColor,
+    ];
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
@@ -65,83 +67,143 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
         horizontal: 24,
       ),
       decoration: BoxDecoration(
-        color: Color(0xff262a34),
-        borderRadius: BorderRadius.circular(20.0),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: Offset(0, 10), // changes position of shadow
+          ),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.topic),
-              SizedBox(width: 20),
-              Text(
-                widget.title == '' ? "---": widget.title!,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Container(
+                    width: 25,
+                    height: 25,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: colors[widget.taskId % 4],
+                    ),
+                  ),
+                  /*Icon(
+                    Icons.topic,
+                    color: colors[widget.taskId % 4],
+                  ),*/
+                  SizedBox(width: 20),
+                  Text(
+                    widget.title == '' ? "---" : widget.title!,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 5,
+                ),
+                child: Text(
+                  (widget.desc == '' || widget.desc == null)
+                      ? "---"
+                      : widget.desc!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).hintColor,
+                    height: 1.5,
+                  ),
                 ),
               ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 5,
-            ),
-            child: Text(
-              (widget.desc == '' || widget.desc == null) ? "---" : widget.desc!,
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF86829D),
-                height: 1.5,
+              FutureBuilder(
+                future: getToDos(this.widget.taskId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 13),
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 200,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                              ),
+                              Container(
+                                width: whichWidth(snapshot.data.toString()) * 2,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      Color(0xff63f1b3),
+                                      Color(0xffb8ffe5)
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                                child: SizedBox(width: 20),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 13),
+                        Container(
+                          margin: EdgeInsets.only(left: 10),
+                          child: Text(
+                            snapshot.data.toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return SizedBox(height: 45);
+                  }
+                },
               ),
-            ),
+            ],
           ),
           FutureBuilder(
             future: getToDos(this.widget.taskId),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 13),
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 200,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: Color(0xff363748),
-                              borderRadius: BorderRadius.circular(40)
-                            ),
-                          ),
-                          Container(
-                            width: whichWidth(snapshot.data.toString())*2,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                                colors: [Color(0xff63f1b3), Color(0xffb8ffe5)]
-                              ),
-                              borderRadius: BorderRadius.circular(40)
-                            ),
-                            child: SizedBox(width: 20)
-                          ),
-                        ],
+                return Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Theme.of(context).shadowColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      snapshot.data.toString().split('/')[1],
+                      style: TextStyle(
+                        color: colors[widget.taskId % 4],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
                       ),
                     ),
-                    SizedBox(height: 13),
-                    Container(
-                      margin: EdgeInsets.only(left: 10),
-                      child: Text(snapshot.data.toString(), style: TextStyle(fontWeight: FontWeight.bold))
-                    ),
-                  ],
+                  ),
                 );
               } else {
-                return SizedBox(height: 45);
+                return SizedBox();
               }
             },
           ),
@@ -159,14 +221,20 @@ class TodoWidget extends StatefulWidget {
   final String? reminder;
   final int? priority;
 
-  TodoWidget({this.text, required this.isDone, required this.removeToDo, this.description, this.reminder, this.priority});
+  TodoWidget({
+    this.text,
+    required this.isDone,
+    required this.removeToDo,
+    this.description,
+    this.reminder,
+    this.priority,
+  });
 
   @override
   _TodoWidgetState createState() => _TodoWidgetState();
 }
 
-class _TodoWidgetState extends State<TodoWidget>{
-
+class _TodoWidgetState extends State<TodoWidget> {
   List<Widget> widgets() {
     if (widget.priority != null) {
       return [
@@ -174,7 +242,9 @@ class _TodoWidgetState extends State<TodoWidget>{
         Icon(
           Icons.priority_high_rounded,
           size: 20,
-          color: widget.priority == 100 ? Colors.red : Colors.red.withOpacity(double.parse('0.${widget.priority}')),
+          color: widget.priority == 100
+              ? Colors.red
+              : Colors.red.withOpacity(double.parse('0.${widget.priority}')),
         ),
       ];
     } else {
@@ -188,8 +258,10 @@ class _TodoWidgetState extends State<TodoWidget>{
       padding: EdgeInsets.all(10),
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: widget.isDone ? Color(0xbb262a34) : Color(0xff262a34),
+        borderRadius: BorderRadius.circular(25),
+        color: widget.isDone
+            ? Theme.of(context).cardColor.withOpacity(0.5)
+            : Theme.of(context).cardColor,
       ),
       child: ListTile(
         leading: Icon(Icons.check),
@@ -201,16 +273,20 @@ class _TodoWidgetState extends State<TodoWidget>{
                 color: !widget.isDone ? Colors.white : Color(0xFF86829D),
                 fontSize: 16.0,
                 fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
-                decoration: widget.isDone ? TextDecoration.lineThrough : null
+                decoration: widget.isDone ? TextDecoration.lineThrough : null,
               ),
             ),
             ...widgets(),
           ],
         ),
-        subtitle: widget.description != null ? Text(widget.description!, style: TextStyle(
-          fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
-          decoration: widget.isDone ? TextDecoration.lineThrough : null
-        )) : null,
+        subtitle: widget.description != null
+            ? Text(widget.description!,
+                style: TextStyle(
+                    fontWeight:
+                        !widget.isDone ? FontWeight.bold : FontWeight.w500,
+                    decoration:
+                        widget.isDone ? TextDecoration.lineThrough : null))
+            : null,
         trailing: IconButton(
           icon: Icon(Icons.delete),
           onPressed: widget.removeToDo as void Function()?,
@@ -223,7 +299,7 @@ class _TodoWidgetState extends State<TodoWidget>{
 class NoGlowBehaviour extends ScrollBehavior {
   @override
   Widget buildViewportChrome(
-    BuildContext context, Widget child, AxisDirection axisDirection) {
+      BuildContext context, Widget child, AxisDirection axisDirection) {
     return child;
   }
 }

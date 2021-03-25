@@ -18,25 +18,27 @@ class Server {
   Future<bool> checkInternet(BuildContext context, bool changed) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.signal_wifi_off,
-              color: Colors.red[100],
-            ),
-            SizedBox(width: 10),
-            Text(
-              'du bist offline',
-              style: TextStyle(color: Colors.red[100]),
-            )
-          ],
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.signal_wifi_off,
+                color: Colors.red[100],
+              ),
+              SizedBox(width: 10),
+              Text(
+                'du bist offline',
+                style: TextStyle(color: Colors.red[100]),
+              )
+            ],
+          ),
+          duration: Duration(seconds: 5),
+          backgroundColor: Theme.of(context).backgroundColor,
         ),
-        duration: Duration(seconds: 5),
-        backgroundColor: Color(0xff262a34),
-      ));
+      );
       return false;
     } else if (changed) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -56,7 +58,7 @@ class Server {
           ],
         ),
         duration: Duration(seconds: 2),
-        backgroundColor: Color(0xff262a34),
+        backgroundColor: Theme.of(context).backgroundColor,
       ));
     }
     return true;

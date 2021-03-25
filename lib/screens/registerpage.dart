@@ -15,11 +15,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final List<Color> colors = [
-    Color(0xff050609),
-    Color(0xff131129),
-    Color(0xff874FD0)
-  ];
   static String username = '';
   static String password = '';
 
@@ -37,16 +32,19 @@ class _RegisterPageState extends State<RegisterPage> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              backgroundColor: Color(0xff262a34),
+              backgroundColor: Theme.of(context).cardColor,
               content: Text(
                 error,
                 textAlign: TextAlign.center,
               ),
               actions: [
-                FlatButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('ok',
-                        style: TextStyle(fontWeight: FontWeight.bold)))
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'ok',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             );
           });
@@ -59,32 +57,18 @@ class _RegisterPageState extends State<RegisterPage> {
       content = GetUsername(setWidget);
     }
     return Scaffold(
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colors[1],
-            colors[0],
-            colors[1],
-          ],
-          stops: [0, 0.8, 1],
-        )),
-        child: SafeArea(
-          child: Container(
-            margin: EdgeInsets.only(top: 50),
-            child: AnimatedSwitcher(
-                duration: Duration(milliseconds: 200),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(
-                    child: child,
-                    scale: animation,
-                  );
-                },
-                child: content),
+      body: SafeArea(
+        child: Container(
+          margin: EdgeInsets.only(top: 50),
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 200),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return ScaleTransition(
+                child: child,
+                scale: animation,
+              );
+            },
+            child: content,
           ),
         ),
       ),
@@ -207,36 +191,38 @@ class FinalRegister extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.data != null) {
-            return Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset('assets/icons/logo.png', width: 75),
-                  SizedBox(height: 30),
-                  Text(
-                      'Willkommen bei TickIt!,\n${_RegisterPageState.username}',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                  SizedBox(height: 15),
-                  Text(
-                      'Jetzt kannst du alle Funktionen von TickIt! verwenden und deine Aufgaben mit Freunden zusammen beweltigen!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                      )),
-                  SizedBox(height: 20),
-                  SubmitButton(
-                    text: 'fertig',
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    ),
-                  )
-                ],
+            return Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/icons/logo.png', width: 75),
+                    SizedBox(height: 30),
+                    Text(
+                        'Willkommen bei TickIt!,\n${_RegisterPageState.username}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 30)),
+                    SizedBox(height: 15),
+                    Text(
+                        'Jetzt kannst du alle Funktionen von TickIt! verwenden und deine Aufgaben mit Freunden zusammen beweltigen!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        )),
+                    SizedBox(height: 20),
+                    SubmitButton(
+                      text: 'fertig',
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      ),
+                    )
+                  ],
+                ),
               ),
             );
           } else {

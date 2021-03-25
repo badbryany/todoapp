@@ -12,16 +12,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle.light.copyWith(
-          statusBarColor: Color(0xff131129),
-          systemNavigationBarColor: Color(0xff050609)),
+        statusBarColor: Color(0xff121314),
+        systemNavigationBarColor: Color(0xff121314),
+      ),
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          backgroundColor: Color(0xff1f1d2b),
-          accentColor: Color(0xff63f1b3),
-          brightness: Brightness.dark,
-          fontFamily: 'Poppins'),
+        backgroundColor: Color(0xff121315),
+        scaffoldBackgroundColor: Color(0xff121315),
+        accentColor: Color(0xff8e84cf),
+        shadowColor: Color(0xff131415),
+        splashColor: Color(0xffc083ff),
+        indicatorColor: Color(0xff23252d),
+        cardColor: Color(0xff1f2022), // Color(0xff23252d),
+        primaryColor: Color(0xffff6a61),
+        focusColor: Color(0xffffd234),
+        buttonColor: Color(0xff6934ff),
+        canvasColor: Color(0xff80d04e),
+        hintColor: Color(0xff777e90),
+        brightness: Brightness.dark,
+        fontFamily: 'Poppins',
+      ),
       home: HomePage(),
     );
   }

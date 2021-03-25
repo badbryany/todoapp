@@ -8,8 +8,14 @@ class InputField extends StatelessWidget {
   final String? initialValue;
   final Widget? suffixWidget;
 
-  InputField({this.icon, this.hintText, this.obscureText, this.onChange, this.initialValue, this.suffixWidget});
-  
+  InputField(
+      {this.icon,
+      this.hintText,
+      this.obscureText,
+      this.onChange,
+      this.initialValue,
+      this.suffixWidget});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,16 +25,14 @@ class InputField extends StatelessWidget {
       padding: EdgeInsets.all(7.5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Color(0xff262a34),
+        color: Theme.of(context).cardColor,
       ),
       child: TextFormField(
         obscureText: obscureText!,
         initialValue: initialValue,
         decoration: InputDecoration(
           suffix: Container(
-            margin: EdgeInsets.only(right: 25),
-            child: suffixWidget
-          ),
+              margin: EdgeInsets.only(right: 25), child: suffixWidget),
           labelText: hintText,
           labelStyle: TextStyle(fontSize: 14),
           hintText: hintText,

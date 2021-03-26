@@ -138,7 +138,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                                 width: 200,
                                 height: 5,
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
+                                  color: Colors.black12,
                                   borderRadius: BorderRadius.circular(40),
                                 ),
                               ),
@@ -180,32 +180,35 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
               ),
             ],
           ),
-          FutureBuilder(
-            future: getToDos(this.widget.taskId),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Theme.of(context).shadowColor,
-                  ),
-                  child: Center(
-                    child: Text(
-                      snapshot.data.toString().split('/')[1],
-                      style: TextStyle(
-                        color: colors[widget.taskId % 4],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
+          Container(
+            margin: EdgeInsets.only(left: 50),
+            child: FutureBuilder(
+              future: getToDos(this.widget.taskId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Theme.of(context).shadowColor,
+                    ),
+                    child: Center(
+                      child: Text(
+                        snapshot.data.toString().split('/')[1],
+                        style: TextStyle(
+                          color: colors[widget.taskId % 4],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              } else {
-                return SizedBox();
-              }
-            },
+                  );
+                } else {
+                  return SizedBox();
+                }
+              },
+            ),
           ),
         ],
       ),

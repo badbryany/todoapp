@@ -277,12 +277,12 @@ class _HomePageState extends State<HomePage> {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          padding: EdgeInsets.symmetric(horizontal: 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.only(top: 20, bottom: 50),
+                margin: EdgeInsets.only(top: 20, bottom: 30),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

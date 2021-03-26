@@ -58,7 +58,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
       Theme.of(context).canvasColor,
       Theme.of(context).focusColor,
       Theme.of(context).primaryColor,
-      Theme.of(context).buttonColor,
+      Theme.of(context).dividerColor,
     ];
     return Container(
       width: double.infinity,

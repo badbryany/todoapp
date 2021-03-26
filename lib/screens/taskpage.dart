@@ -713,7 +713,7 @@ class _TaskpageState extends State<Taskpage> {
     List<dynamic> toDoSettings = [
       {
         'icon':
-            Icon(Icons.subject, size: 30, color: Theme.of(context).splashColor),
+            Icon(Icons.subject, size: 30, color: Theme.of(context).buttonColor),
         'onTap': () => setState(() {
               _description = !_description;
               _addHeight = 230;
@@ -721,12 +721,12 @@ class _TaskpageState extends State<Taskpage> {
       },
       {
         'icon':
-            Icon(Icons.alarm, color: Theme.of(context).splashColor, size: 30),
+            Icon(Icons.alarm, color: Theme.of(context).buttonColor, size: 30),
         'onTap': pickDate
       },
       {
         'icon':
-            Icon(Icons.tune, color: Theme.of(context).splashColor, size: 30),
+            Icon(Icons.tune, color: Theme.of(context).buttonColor, size: 30),
         'onTap': advancedSettings
       },
     ];
@@ -831,18 +831,20 @@ class _TaskpageState extends State<Taskpage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  SvgPicture.asset(
-                                    'assets/imgs/relax.svg',
+                                  Image.asset(
+                                    'assets/imgs/relax.png',
                                     width:
                                         MediaQuery.of(context).size.width * 0.6,
-                                    alignment: Alignment.center,
                                   ),
                                   SizedBox(height: 50),
                                   Text(
                                     'Du hast alle Aufgaben erledigt!\nEntspann dich!',
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.grey),
-                                  )
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -984,14 +986,16 @@ class _TaskpageState extends State<Taskpage> {
                               Row(
                                 children: [
                                   //{var color = '0xffffc548';},
-                                  ...toDoSettings.map((e) => InkWell(
-                                        onTap: e['onTap'],
-                                        child: Container(
-                                          margin: EdgeInsets.all(8),
-                                          padding: EdgeInsets.all(7),
-                                          child: e['icon'],
-                                        ),
-                                      )),
+                                  ...toDoSettings.map(
+                                    (e) => InkWell(
+                                      onTap: e['onTap'],
+                                      child: Container(
+                                        margin: EdgeInsets.all(8),
+                                        padding: EdgeInsets.all(7),
+                                        child: e['icon'],
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                               InkWell(

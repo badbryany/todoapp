@@ -21,7 +21,6 @@ class Todo {
   });
 
   Map<String, dynamic> toMap() {
-    print('reminder: $reminder');
     return {
       'id': id,
       'taskId': taskId,

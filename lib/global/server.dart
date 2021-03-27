@@ -186,7 +186,7 @@ class Server {
         'title': task.toMap()['title'],
         'description': task.toMap()['description']
       });
-      print(res.content());
+      //print(res.content());
     }
   }
 
@@ -196,7 +196,7 @@ class Server {
         'id': id,
         'newTitle': title,
       });
-      print(res.content());
+      //print(res.content());
     }
   }
 
@@ -206,7 +206,7 @@ class Server {
         'id': id,
         'newDescription': description,
       });
-      print(res.content());
+      //print(res.content());
     }
   }
 
@@ -215,7 +215,7 @@ class Server {
       var res = await Requests.post('$url/removeTask', json: {
         'user_task_id': id,
       });
-      print(res.content());
+      //print(res.content());
     }
   }
 
@@ -232,7 +232,7 @@ class Server {
         'category': todoData['category'],
         'place': todoData['place'],
       });
-      print(res.content());
+      //print(res.content());
     }
   }
 
@@ -249,7 +249,7 @@ class Server {
         'category': todoData['category'],
         'place': todoData['place'],
       });
-      print(res.content());
+      //print(res.content());
     }
   }
 
@@ -259,7 +259,7 @@ class Server {
         'todo_id': id,
         'isDone': isDone,
       });
-      print(res.content());
+      //print(res.content());
     }
   }
 
@@ -268,7 +268,66 @@ class Server {
       var res = await Requests.post('$url/removeToDo', json: {
         'todo_id': id,
       });
+      //print(res.content());
+    }
+  }
+
+  //	----------------	FREINDS AND TODOS-LIST SYNCRONISATION	 ----------------	//
+
+  Future<List> getPeople() async {
+    if (HomePage.loggedIn) {
+      var res = await Requests.get('$url/getPeople');
+      return jsonDecode(res.content());
+    }
+    return [];
+  }
+
+  Future<List> getFriends() async {
+    if (HomePage.loggedIn) {
+      var res = await Requests.get('$url/getFriends');
+      return jsonDecode(res.content());
+    }
+    return [];
+  }
+
+  void newFriend(String username) async {
+    if (HomePage.loggedIn) {
+      var res = await Requests.post('$url/newFriend', json: {
+        'newFriend': username,
+      });
       print(res.content());
+    }
+  }
+
+  Future<List> getReuests() async {
+    if (HomePage.loggedIn) {
+      var res = await Requests.get('$url/getRequests');
+      return jsonDecode(res.content());
+    }
+    return [];
+  }
+
+  Future<void> acceptRequest(String name) async {
+    if (HomePage.loggedIn) {
+      var res = await Requests.post(
+        '$url/acceptFriend',
+        json: {
+          'friend': name,
+        },
+      );
+      //print(res.content());
+    }
+  }
+
+  Future<void> denyRequest(String name) async {
+    if (HomePage.loggedIn) {
+      var res = await Requests.post(
+        '$url/denyFriend',
+        json: {
+          'friend': name,
+        },
+      );
+      //print(res.content());
     }
   }
 }

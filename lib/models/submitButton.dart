@@ -9,16 +9,16 @@ class SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.all(15),
       child: InkWell(
         onTap: onPressed as void Function()?,
         child: Container(
-          margin: EdgeInsets.all(15),
           padding: EdgeInsets.all(15),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             gradient: LinearGradient(
-              colors: [Color(0xff213BD0), Color(0xff2c46da)]
-            )
+              colors: [Color(0xff213BD0), Color(0xff2c46da)],
+            ),
           ),
           child: Text(text),
         ),

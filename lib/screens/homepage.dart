@@ -84,22 +84,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future notificationSelected(String payload) async {
-    _dbHelper.getTasks().then((e) => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Taskpage(
-              color: Color(0xffc083ff),
-              task: e[int.parse(payload) - 1],
-              notificationSelected: notificationSelected,
-              reloadTasks: getTasks,
-              closeContainer: () => print('bug'),
+    _dbHelper.getTasks().then(
+          (e) => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Taskpage(
+                color: Color(0xffc083ff),
+                task: e[int.parse(payload) - 1],
+                notificationSelected: notificationSelected,
+                reloadTasks: getTasks,
+                closeContainer: () => print('bug'),
+              ),
             ),
+          ).then(
+            (value) {
+              setState(() {});
+            },
           ),
-        ).then(
-          (value) {
-            setState(() {});
-          },
-        ));
+        );
   }
 
   void _showDevInfo() {
@@ -279,6 +281,7 @@ class _HomePageState extends State<HomePage> {
       Theme.of(context).primaryColor,
       Theme.of(context).dividerColor,
     ];
+    DatabaseHelper().cleanToDos();
     return Scaffold(
       body: SafeArea(
         child: Container(

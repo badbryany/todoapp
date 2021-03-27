@@ -7,7 +7,18 @@ class Todo {
   final int? priority;
   final String? reminder;
   final int? isDone;
-  Todo({this.id, this.taskId, this.title, this.isDone, this.description, this.priority, this.category, this.reminder});
+  final String? doneDate;
+  Todo({
+    this.id,
+    this.taskId,
+    this.title,
+    this.isDone,
+    this.description,
+    this.priority,
+    this.category,
+    this.reminder,
+    this.doneDate,
+  });
 
   Map<String, dynamic> toMap() {
     print('reminder: $reminder');
@@ -20,6 +31,7 @@ class Todo {
       'priority': priority,
       'category': category,
       'reminder': reminder,
+      'doneDate': doneDate,
     };
   }
 }

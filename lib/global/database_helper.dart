@@ -17,7 +17,7 @@ class DatabaseHelper {
         await db.execute(
             'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT)');
         await db.execute(
-            'CREATE TABLE todo (id INTEGER PRIMARY KEY, taskId INTEGER, title TEXT, description TEXT, priority INTEGER, reminder TEXT, category TEXT, place TEXT, isDone INTEGER)');
+            'CREATE TABLE todo (id INTEGER PRIMARY KEY, taskId INTEGER, title TEXT, description TEXT, priority INTEGER, reminder TEXT, category TEXT, place TEXT, isDone INTEGER, doneDate TEXT)');
 
         //return db;
       },
@@ -105,8 +105,10 @@ class DatabaseHelper {
     Database _db = await database();
     List<Map<String, dynamic>> todoMap =
         await _db.rawQuery('SELECT * FROM todo');
-    return List.generate(todoMap.length, (index) {
-      return Todo(
+    return List.generate(
+      todoMap.length,
+      (index) {
+        return Todo(
           id: todoMap[index]["id"],
           title: todoMap[index]["title"],
           taskId: todoMap[index]["taskId"],
@@ -114,13 +116,19 @@ class DatabaseHelper {
           description: todoMap[index]["description"],
           priority: todoMap[index]["priority"],
           category: todoMap[index]["category"],
-          reminder: todoMap[index]["reminder"]);
-    });
+          reminder: todoMap[index]["reminder"],
+          doneDate: todoMap[index]["doneDate"],
+        );
+      },
+    );
   }
 
   Future<void> updateTodoDone(int? id, int isDone) async {
+    DateTime now = DateTime.now();
+
     Database _db = await database();
-    await _db.rawUpdate('UPDATE todo SET isDone = "$isDone" WHERE id = "$id"');
+    await _db.rawUpdate(
+        'UPDATE todo SET isDone = "$isDone", doneDate = "$now" WHERE id = "$id"');
     server.updateToDoDone(id, isDone);
   }
 
@@ -135,12 +143,13 @@ class DatabaseHelper {
     await _db
         .rawUpdate('UPDATE todo SET category="$category" WHERE id = "$id"');
     Todo todo = new Todo(
-        taskId: taskId,
-        id: id,
-        title: title,
-        description: description,
-        priority: priority.toInt(),
-        category: category);
+      taskId: taskId,
+      id: id,
+      title: title,
+      description: description,
+      priority: priority.toInt(),
+      category: category,
+    );
     server.updateToDo(todo);
   }
 
@@ -155,5 +164,20 @@ class DatabaseHelper {
     Database _db = await database();
     await _db.rawDelete('DELETE FROM todo WHERE id = "$id"');
     server.removeToDo(id);
+  }
+
+  Future<void> cleanToDos() async {
+    List<Todo> todos = await this.getTodos();
+
+    for (int i = 0; i < todos.length; i++) {
+      if (todos[i].doneDate != null) {
+        Duration difference =
+            DateTime.parse(todos[i].doneDate!).difference(DateTime.now());
+        if (difference.inDays >= 1) {
+          await this.deleteToDo(todos[i].id);
+          print('deleted todo\nid: ${todos[i].id}; title: ${todos[i].title}');
+        }
+      }
+    }
   }
 }

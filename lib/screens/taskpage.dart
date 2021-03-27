@@ -18,11 +18,12 @@ class Taskpage extends StatefulWidget {
   final Function reloadTasks;
   final Function closeContainer;
 
-  Taskpage(
-      {required this.task,
-      required this.notificationSelected,
-      required this.reloadTasks,
-      required this.closeContainer});
+  Taskpage({
+    required this.task,
+    required this.notificationSelected,
+    required this.reloadTasks,
+    required this.closeContainer,
+  });
 
   @override
   _TaskpageState createState() => _TaskpageState();
@@ -31,7 +32,7 @@ class Taskpage extends StatefulWidget {
 class _TaskpageState extends State<Taskpage> {
   DatabaseHelper _dbHelper = DatabaseHelper();
 
-  final key = GlobalKey<AnimatedListState>();
+  final listKey = GlobalKey<AnimatedListState>();
 
   String todoTitle = '';
   String todoDescription = '';
@@ -39,6 +40,8 @@ class _TaskpageState extends State<Taskpage> {
   double _range = 0;
   String? _category = 'sonstige';
   List<String?> _categories = ['sonstige'];
+
+  List<Todo> todos = [];
 
   Widget blure = SizedBox();
 
@@ -213,12 +216,13 @@ class _TaskpageState extends State<Taskpage> {
             ),
             //exit
             Positioned(
-                bottom: 10,
-                left: 10,
-                child: IconButton(
-                  icon: Icon(Icons.clear, size: 20),
-                  onPressed: () => Navigator.pop(context),
-                )),
+              bottom: 10,
+              left: 10,
+              child: IconButton(
+                icon: Icon(Icons.clear, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -227,7 +231,10 @@ class _TaskpageState extends State<Taskpage> {
                   //title
                   Text(
                     '${todo.title}',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 23,
+                    ),
                   ),
 
                   //body
@@ -239,66 +246,67 @@ class _TaskpageState extends State<Taskpage> {
                         ...editingFields.map(
                           (e) => InkWell(
                             onTap: () => showDialog(
-                                context: context,
-                                builder: (context) {
-                                  String? newValue;
-                                  return AlertDialog(
-                                    backgroundColor:
-                                        Theme.of(context).backgroundColor,
-                                    content: Container(
-                                      height: 100,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(e['placeholder'] + ' bearbeiten',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 22)),
-                                          TextFormField(
-                                            initialValue: e['text'],
-                                            decoration: InputDecoration(
-                                                prefixIcon: e['icon'],
-                                                border: InputBorder.none,
-                                                hintText: e['placeholder']),
-                                            onChanged: (value) =>
-                                                newValue = value,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    actions: [
-                                      FlatButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text('abbrechen')),
-                                      FlatButton(
-                                        onPressed: () {
-                                          if (e['placeholder'] == 'Titel') {
-                                            _title = newValue;
-                                          } else if (e['placeholder'] ==
-                                              'Beschreibung') {
-                                            _description = newValue;
-                                          }
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('bestätigen',
+                              context: context,
+                              builder: (context) {
+                                String? newValue;
+                                return AlertDialog(
+                                  backgroundColor:
+                                      Theme.of(context).backgroundColor,
+                                  content: Container(
+                                    height: 100,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(e['placeholder'] + ' bearbeiten',
                                             style: TextStyle(
-                                                fontWeight: FontWeight.bold)),
-                                      )
-                                    ],
-                                  );
-                                }),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22)),
+                                        TextFormField(
+                                          initialValue: e['text'],
+                                          decoration: InputDecoration(
+                                              prefixIcon: e['icon'],
+                                              border: InputBorder.none,
+                                              hintText: e['placeholder']),
+                                          onChanged: (value) =>
+                                              newValue = value,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text('abbrechen')),
+                                    TextButton(
+                                      onPressed: () {
+                                        if (e['placeholder'] == 'Titel') {
+                                          _title = newValue;
+                                        } else if (e['placeholder'] ==
+                                            'Beschreibung') {
+                                          _description = newValue;
+                                        }
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('bestätigen',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                    )
+                                  ],
+                                );
+                              },
+                            ),
                             child: Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.all(20),
                               margin: EdgeInsets.all(5),
                               width: MediaQuery.of(context).size.width * 0.8,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.black.withOpacity(0.1)),
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.black.withOpacity(0.1),
+                              ),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -334,7 +342,7 @@ class _TaskpageState extends State<Taskpage> {
                     return Container(
                       height: 70,
                       child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
+                        //scrollDirection: Axis.horizontal,
                         itemCount: _categories.length,
                         itemBuilder: (BuildContext context, int index) {
                           return InkWell(
@@ -478,38 +486,81 @@ class _TaskpageState extends State<Taskpage> {
       builder: (BuildContext context) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.6,
-          child: Stack(children: [
-            Positioned(
-              bottom: 10,
-              left: 10,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back, size: 20),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Container(
-                  margin: EdgeInsets.only(top: 7),
-                  height: 4,
-                  width: 90,
-                  decoration: BoxDecoration(
-                      color: Color(0xff636778),
-                      borderRadius: BorderRadius.circular(20)),
+          child: Stack(
+            children: [
+              Positioned(
+                bottom: 10,
+                left: 10,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back, size: 20),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ),
-            ),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  //priority
-                  Container(
-                    margin: EdgeInsets.all(margin),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 7),
+                    height: 4,
+                    width: 90,
+                    decoration: BoxDecoration(
+                        color: Color(0xff636778),
+                        borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+              ),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    //priority
+                    Container(
+                      margin: EdgeInsets.all(margin),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.priority_high_outlined),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      'Priorität',
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(),
+                              ],
+                            ),
+                            StatefulBuilder(
+                              builder: (context, setState) {
+                                return Slider(
+                                  value: _range,
+                                  max: 100,
+                                  min: 0,
+                                  divisions: 5,
+                                  label: '${_range.round()}%',
+                                  onChanged: (newRating) {
+                                    _range = newRating;
+                                    setState(() {});
+                                  },
+                                );
+                              },
+                            ),
+                          ]),
+                    ),
+                    //category
+                    Container(
+                      margin: EdgeInsets.all(margin),
+                      child: Column(
                         children: [
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -518,195 +569,160 @@ class _TaskpageState extends State<Taskpage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.priority_high_outlined),
+                                  Icon(Icons.category),
                                   SizedBox(width: 10),
                                   Text(
-                                    'Priorität',
+                                    'Kategorie',
                                     style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
-                              SizedBox(),
-                            ],
-                          ),
-                          StatefulBuilder(
-                            builder: (context, setState) {
-                              return Slider(
-                                value: _range,
-                                max: 100,
-                                min: 0,
-                                divisions: 5,
-                                label: '${_range.round()}%',
-                                onChanged: (newRating) {
-                                  _range = newRating;
-                                  setState(() {});
-                                },
-                              );
-                            },
-                          ),
-                        ]),
-                  ),
-                  //category
-                  Container(
-                    margin: EdgeInsets.all(margin),
-                    child: Column(children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.category),
-                              SizedBox(width: 10),
-                              Text(
-                                'Kategorie',
-                                style: TextStyle(
-                                    fontSize: 22, fontWeight: FontWeight.bold),
+                              IconButton(
+                                icon: Icon(Icons.add),
+                                onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    String? _newCategory;
+                                    return AlertDialog(
+                                      title: Text('Kategorie hinzufügen',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      backgroundColor:
+                                          Theme.of(context).cardColor,
+                                      content: TextFormField(
+                                        initialValue: _newCategory,
+                                        autofocus: true,
+                                        decoration: InputDecoration(
+                                            hintText: 'Neue Kategorie...',
+                                            border: InputBorder.none),
+                                        onChanged: (value) => setState(() {
+                                          _newCategory = value;
+                                        }),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            _newCategory = null;
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('abbrechen'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            if (_newCategory != null &&
+                                                _newCategory != '') {
+                                              SharedPreferences prefs =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              if (prefs.getString(
+                                                      'categories') ==
+                                                  null) {
+                                                prefs.setString('categories',
+                                                    '["sonstige"]');
+                                              }
+                                              List __categories = jsonDecode(
+                                                  prefs
+                                                      .getString('categories'));
+                                              __categories.add(_newCategory);
+                                              prefs.setString('categories',
+                                                  jsonEncode(__categories));
+
+                                              List<String?> _outputList = [];
+                                              for (var j = 0;
+                                                  j <
+                                                      jsonDecode(
+                                                              prefs.getString(
+                                                                  'categories'))
+                                                          .length;
+                                                  j++) {
+                                                _outputList.add(jsonDecode(
+                                                    prefs.getString(
+                                                        'categories'))[j]);
+                                              }
+                                              setState(() {
+                                                _categories = _outputList;
+                                                _category = _newCategory;
+                                              });
+
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                          child: Text(
+                                            'hinzufügen',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
                               ),
                             ],
                           ),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () => showDialog(
-                                context: context,
-                                builder: (context) {
-                                  String? _newCategory;
-                                  return AlertDialog(
-                                    title: Text('Kategorie hinzufügen',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    backgroundColor:
-                                        Theme.of(context).cardColor,
-                                    content: TextFormField(
-                                      initialValue: _newCategory,
-                                      autofocus: true,
-                                      decoration: InputDecoration(
-                                          hintText: 'Neue Kategorie...',
-                                          border: InputBorder.none),
-                                      onChanged: (value) => setState(() {
-                                        _newCategory = value;
-                                      }),
+                          StatefulBuilder(builder: (context, setState) {
+                            return Container(
+                              height: 70,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: _categories.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return InkWell(
+                                    onTap: () => setState(
+                                        () => _category = _categories[index]),
+                                    onLongPress: () async {
+                                      editCategorie(_categories[index]);
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.all(10),
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: _categories[index] == _category
+                                              ? Color(0xff5f8273)
+                                              : Color(0xff47475b),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Center(
+                                        child: Text(_categories[index]!),
+                                      ),
                                     ),
-                                    actions: [
-                                      FlatButton(
-                                        onPressed: () {
-                                          _newCategory = null;
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('abbrechen'),
-                                      ),
-                                      FlatButton(
-                                        onPressed: () async {
-                                          if (_newCategory != null &&
-                                              _newCategory != '') {
-                                            SharedPreferences prefs =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            if (prefs.getString('categories') ==
-                                                null) {
-                                              prefs.setString(
-                                                  'categories', '["sonstige"]');
-                                            }
-                                            List __categories = jsonDecode(
-                                                prefs.getString('categories'));
-                                            __categories.add(_newCategory);
-                                            prefs.setString('categories',
-                                                jsonEncode(__categories));
-
-                                            List<String?> _outputList = [];
-                                            for (var j = 0;
-                                                j <
-                                                    jsonDecode(prefs.getString(
-                                                            'categories'))
-                                                        .length;
-                                                j++) {
-                                              _outputList.add(jsonDecode(prefs
-                                                  .getString('categories'))[j]);
-                                            }
-                                            setState(() {
-                                              _categories = _outputList;
-                                              _category = _newCategory;
-                                            });
-
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                        child: Text('hinzufügen',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold)),
-                                      ),
-                                    ],
                                   );
-                                }),
-                          ),
+                                },
+                              ),
+                            );
+                          }),
                         ],
                       ),
-                      StatefulBuilder(builder: (context, setState) {
-                        return Container(
-                          height: 70,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _categories.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return InkWell(
-                                onTap: () => setState(
-                                    () => _category = _categories[index]),
-                                onLongPress: () async {
-                                  editCategorie(_categories[index]);
-                                  setState(() {});
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.all(10),
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                      color: _categories[index] == _category
-                                          ? Color(0xff5f8273)
-                                          : Color(0xff47475b),
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Center(
-                                    child: Text(_categories[index]!),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      }),
-                    ]),
-                  ),
-                  Container(
-                    child: InkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        margin: EdgeInsets.all(15),
-                        padding: EdgeInsets.all(15),
-                        decoration: BoxDecoration(
+                    ),
+                    Container(
+                      child: InkWell(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          margin: EdgeInsets.all(15),
+                          padding: EdgeInsets.all(15),
+                          decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            gradient: LinearGradient(colors: [
-                              Color(0xff213BD0),
-                              Color(0xff2c46da)
-                            ])),
-                        child: Text("Bestätigen"),
+                            gradient: LinearGradient(
+                              colors: [Color(0xff213BD0), Color(0xff2c46da)],
+                            ),
+                          ),
+                          child: Text("Bestätigen"),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ]),
+            ],
+          ),
         );
       },
     );
   }
-
-  final List<Color> colors = [
-    Color(0xff050609),
-    Color(0xff131129),
-    Color(0xff874FD0)
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -850,10 +866,12 @@ class _TaskpageState extends State<Taskpage> {
                             ),
                           );
                         }
+                        todos = snapshot.data;
                         return Expanded(
-                          child: ListView.builder(
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
+                          child: AnimatedList(
+                            key: listKey,
+                            initialItemCount: todos.length,
+                            itemBuilder: (context, index, animation) {
                               return InkWell(
                                 onTap: () async {
                                   if (snapshot.data[index].isDone == 0) {
@@ -878,6 +896,21 @@ class _TaskpageState extends State<Taskpage> {
                                   removeToDo: () {
                                     _dbHelper
                                         .deleteToDo(snapshot.data[index].id);
+                                    listKey.currentState!.removeItem(
+                                      index,
+                                      (context, animation) => TodoWidget(
+                                        animation: animation,
+                                        text: snapshot.data[index].title,
+                                        description:
+                                            snapshot.data[index].description,
+                                        isDone: snapshot.data[index].isDone == 0
+                                            ? false
+                                            : true,
+                                        reminder: snapshot.data[index].reminder,
+                                        priority: snapshot.data[index].priority,
+                                        removeToDo: () {},
+                                      ),
+                                    );
                                     setState(() {});
                                   },
                                 ),
@@ -1015,15 +1048,23 @@ class _TaskpageState extends State<Taskpage> {
                                         category: _category,
                                         reminder: _dateTime.toString(),
                                       );
+                                      if (listKey.currentState != null) {
+                                        listKey.currentState!
+                                            .insertItem(todos.length);
+                                      } else {
+                                        setState(() {});
+                                      }
                                       await _dbHelper.insertTodo(
                                           _newTodo, true);
+                                      todos.insert(todos.length, _newTodo);
                                       if (_dateTime != null) {
                                         _showNotification(
-                                            notifocationTime: _dateTime!,
-                                            title: value,
-                                            body: todoDescription,
-                                            taskId: _taskId,
-                                            subText: widget.task.title);
+                                          notifocationTime: _dateTime!,
+                                          title: value,
+                                          body: todoDescription,
+                                          taskId: _taskId,
+                                          subText: widget.task.title,
+                                        );
                                       }
                                       setState(() {
                                         todoTitle = '';
@@ -1034,7 +1075,6 @@ class _TaskpageState extends State<Taskpage> {
                                         _description = false;
                                         blure = SizedBox();
                                       });
-                                      //_todoFocus.requestFocus();
                                     } else {
                                       print('Task doesn\'t exist');
                                     }

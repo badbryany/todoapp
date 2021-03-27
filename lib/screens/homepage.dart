@@ -28,12 +28,6 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   List<dynamic> tasks = [];
 
-  final List<Color> colors = [
-    Color(0xff050609),
-    Color(0xff131129),
-    Color(0xff874FD0)
-  ];
-
   final Connectivity _connectivity = Connectivity();
   var foo;
 
@@ -242,31 +236,37 @@ class _HomePageState extends State<HomePage> {
     }
     if (tasks.length == 0) {
       showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              backgroundColor: Theme.of(context).cardColor,
-              title: Text(
-                'Erstelle eine neue Aufgabenliste!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 19),
-              ),
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('drücke auf das '),
-                  Icon(Icons.add),
-                  Text(' zum erstellen')
-                ],
-              ),
-              actions: [
-                FlatButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('ok',
-                        style: TextStyle(fontWeight: FontWeight.bold)))
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Theme.of(context).cardColor,
+            title: Text(
+              'Erstelle eine neue Aufgabenliste!',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 19),
+            ),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('drücke auf das '),
+                Icon(Icons.add),
+                Text(' zum erstellen')
               ],
-            );
-          });
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'ok',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 

@@ -224,6 +224,8 @@ class TodoWidget extends StatefulWidget {
   final String? reminder;
   final int? priority;
 
+  final animation;
+
   TodoWidget({
     this.text,
     required this.isDone,
@@ -231,6 +233,7 @@ class TodoWidget extends StatefulWidget {
     this.description,
     this.reminder,
     this.priority,
+    this.animation,
   });
 
   @override
@@ -257,42 +260,89 @@ class _TodoWidgetState extends State<TodoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        color: widget.isDone
-            ? Theme.of(context).cardColor.withOpacity(0.5)
-            : Theme.of(context).cardColor,
-      ),
-      child: ListTile(
-        leading: Icon(Icons.check),
-        title: Row(
-          children: [
-            Text(
-              widget.text ?? "---",
-              style: TextStyle(
-                color: !widget.isDone ? Colors.white : Color(0xFF86829D),
-                fontSize: 16.0,
-                fontWeight: !widget.isDone ? FontWeight.bold : FontWeight.w500,
-                decoration: widget.isDone ? TextDecoration.lineThrough : null,
-              ),
-            ),
-            ...widgets(),
-          ],
+    if (widget.animation == null) {
+      return Container(
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          color: widget.isDone
+              ? Theme.of(context).cardColor.withOpacity(0.5)
+              : Theme.of(context).cardColor,
         ),
-        subtitle: widget.description != null
-            ? Text(widget.description!,
+        child: ListTile(
+          leading: Icon(Icons.check),
+          title: Row(
+            children: [
+              Text(
+                widget.text ?? "---",
                 style: TextStyle(
-                    fontWeight:
-                        !widget.isDone ? FontWeight.bold : FontWeight.w500,
-                    decoration:
-                        widget.isDone ? TextDecoration.lineThrough : null))
-            : null,
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: widget.removeToDo as void Function()?,
+                  color: !widget.isDone ? Colors.white : Color(0xFF86829D),
+                  fontSize: 16.0,
+                  fontWeight:
+                      !widget.isDone ? FontWeight.bold : FontWeight.w500,
+                  decoration: widget.isDone ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              ...widgets(),
+            ],
+          ),
+          subtitle: widget.description != null
+              ? Text(widget.description!,
+                  style: TextStyle(
+                      fontWeight:
+                          !widget.isDone ? FontWeight.bold : FontWeight.w500,
+                      decoration:
+                          widget.isDone ? TextDecoration.lineThrough : null))
+              : null,
+          trailing: IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: widget.removeToDo as void Function()?,
+          ),
+        ),
+      );
+    }
+    return SizeTransition(
+      axis: Axis.vertical,
+      sizeFactor: widget.animation,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          color: widget.isDone
+              ? Theme.of(context).cardColor.withOpacity(0.5)
+              : Theme.of(context).cardColor,
+        ),
+        child: ListTile(
+          leading: Icon(Icons.check),
+          title: Row(
+            children: [
+              Text(
+                widget.text ?? "---",
+                style: TextStyle(
+                  color: !widget.isDone ? Colors.white : Color(0xFF86829D),
+                  fontSize: 16.0,
+                  fontWeight:
+                      !widget.isDone ? FontWeight.bold : FontWeight.w500,
+                  decoration: widget.isDone ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              ...widgets(),
+            ],
+          ),
+          subtitle: widget.description != null
+              ? Text(widget.description!,
+                  style: TextStyle(
+                      fontWeight:
+                          !widget.isDone ? FontWeight.bold : FontWeight.w500,
+                      decoration:
+                          widget.isDone ? TextDecoration.lineThrough : null))
+              : null,
+          trailing: IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: widget.removeToDo as void Function()?,
+          ),
         ),
       ),
     );

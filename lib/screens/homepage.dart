@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:animations/animations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../database_helper.dart';
+import '../global/database_helper.dart';
 import './taskpage.dart';
 import '../widgets.dart';
 import '../models/task.dart';

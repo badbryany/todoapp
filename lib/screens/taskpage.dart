@@ -7,7 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import '../database_helper.dart';
+import '../global/database_helper.dart';
 import '../models/task.dart';
 import '../models/todo.dart';
 import '../widgets.dart';

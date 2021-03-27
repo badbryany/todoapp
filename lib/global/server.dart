@@ -6,7 +6,7 @@ import '../screens/homepage.dart';
 
 import 'package:connectivity/connectivity.dart';
 
-import '../database_helper.dart';
+import 'database_helper.dart';
 
 import '../models/task.dart';
 import '../models/todo.dart';

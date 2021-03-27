@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './models/todo.dart';
-import './database_helper.dart';
+import 'global/database_helper.dart';
 
 class TaskCardWidget extends StatefulWidget {
   final String? title;

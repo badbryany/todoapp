@@ -88,6 +88,7 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
             builder: (context) => Taskpage(
+              color: Color(0xffc083ff),
               task: e[int.parse(payload) - 1],
               notificationSelected: notificationSelected,
               reloadTasks: getTasks,
@@ -272,6 +273,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    List colors = [
+      Theme.of(context).canvasColor,
+      Theme.of(context).focusColor,
+      Theme.of(context).primaryColor,
+      Theme.of(context).dividerColor,
+    ];
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -353,6 +360,7 @@ class _HomePageState extends State<HomePage> {
                           transitionDuration: Duration(milliseconds: 500),
                           openBuilder: (_, closeContainer) {
                             return Taskpage(
+                              color: colors[tasks[index].id % colors.length],
                               task: Task(
                                   id: tasks[index].id,
                                   title: tasks[index].title,

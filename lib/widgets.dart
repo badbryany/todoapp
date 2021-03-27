@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'dart:math';
-
 import './models/todo.dart';
 import './database_helper.dart';
 
@@ -54,7 +52,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var colors = [
+    List colors = [
       Theme.of(context).canvasColor,
       Theme.of(context).focusColor,
       Theme.of(context).primaryColor,
@@ -90,7 +88,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                     height: 25,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: colors[widget.taskId % 4],
+                      color: colors[widget.taskId % colors.length],
                     ),
                   ),
                   /*Icon(

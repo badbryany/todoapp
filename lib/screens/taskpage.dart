@@ -17,12 +17,14 @@ class Taskpage extends StatefulWidget {
   final Function notificationSelected;
   final Function reloadTasks;
   final Function closeContainer;
+  final Color color;
 
   Taskpage({
     required this.task,
     required this.notificationSelected,
     required this.reloadTasks,
     required this.closeContainer,
+    required this.color,
   });
 
   @override
@@ -728,21 +730,18 @@ class _TaskpageState extends State<Taskpage> {
   Widget build(BuildContext context) {
     List<dynamic> toDoSettings = [
       {
-        'icon':
-            Icon(Icons.subject, size: 30, color: Theme.of(context).buttonColor),
+        'icon': Icon(Icons.subject, size: 30, color: widget.color),
         'onTap': () => setState(() {
               _description = !_description;
               _addHeight = 230;
             })
       },
       {
-        'icon':
-            Icon(Icons.alarm, color: Theme.of(context).buttonColor, size: 30),
+        'icon': Icon(Icons.alarm, color: widget.color, size: 30),
         'onTap': pickDate
       },
       {
-        'icon':
-            Icon(Icons.tune, color: Theme.of(context).buttonColor, size: 30),
+        'icon': Icon(Icons.tune, color: widget.color, size: 30),
         'onTap': advancedSettings
       },
     ];

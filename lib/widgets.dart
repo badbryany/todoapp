@@ -144,14 +144,15 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                                 width: whichWidth(snapshot.data.toString()) * 2,
                                 height: 5,
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
+                                  /*gradient: LinearGradient(
                                     begin: Alignment.centerLeft,
                                     end: Alignment.centerRight,
                                     colors: [
                                       Color(0xff63f1b3),
                                       Color(0xffb8ffe5)
                                     ],
-                                  ),
+                                  ),*/
+                                  color: Color(0xff22cc62),
                                   borderRadius: BorderRadius.circular(40),
                                 ),
                                 child: SizedBox(width: 20),
@@ -275,7 +276,6 @@ class _TodoWidgetState extends State<TodoWidget> {
               Text(
                 widget.text ?? "---",
                 style: TextStyle(
-                  color: !widget.isDone ? Colors.white : Color(0xFF86829D),
                   fontSize: 16.0,
                   fontWeight:
                       !widget.isDone ? FontWeight.bold : FontWeight.w500,

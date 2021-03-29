@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:animations/animations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 import '../global/database_helper.dart';
 import './taskpage.dart';
@@ -275,6 +276,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Theme.of(context).backgroundColor,
+        systemNavigationBarColor: Theme.of(context).backgroundColor,
+      ),
+    );
     List colors = [
       Theme.of(context).canvasColor,
       Theme.of(context).focusColor,
@@ -331,9 +338,12 @@ class _HomePageState extends State<HomePage> {
                     OpenContainer(
                       closedColor: Theme.of(context).backgroundColor,
                       openColor: Theme.of(context).backgroundColor,
+                      closedElevation: 0,
                       closedBuilder: (context, openContainer) {
-                        return SvgPicture.asset('assets/icons/avatar.svg',
-                            width: 35);
+                        return SvgPicture.asset(
+                          'assets/icons/avatar.svg',
+                          width: 35,
+                        );
                       },
                       openBuilder: (context, closeContainer) {
                         return Profile(

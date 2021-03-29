@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -11,6 +12,8 @@ import '../global/database_helper.dart';
 import '../models/task.dart';
 import '../models/todo.dart';
 import '../widgets.dart';
+
+import './extraPages/inviteFriends.dart';
 
 class Taskpage extends StatefulWidget {
   final Task task;
@@ -728,6 +731,13 @@ class _TaskpageState extends State<Taskpage> {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> popUpItems = [
+      {
+        'title': 'Freunde einladen',
+        'link': InviteFriends(taskId: widget.task.id!),
+        'openContainer': () {},
+      },
+    ];
     List<dynamic> toDoSettings = [
       {
         'icon': Icon(Icons.subject, size: 30, color: widget.color),
@@ -927,36 +937,76 @@ class _TaskpageState extends State<Taskpage> {
               Positioned(
                 top: 35,
                 right: 25,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () => setState(
-                      () {
-                        _addToDo = !_addToDo;
-                        blure = InkWell(
-                          onTap: () => setState(() {
-                            blure = SizedBox();
-                            _addToDo = false;
-                            _description = false;
-                          }),
-                          child: Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 1,
-                                sigmaY: 1,
-                              ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () => setState(
+                          () {
+                            _addToDo = !_addToDo;
+                            blure = InkWell(
+                              onTap: () => setState(() {
+                                blure = SizedBox();
+                                _addToDo = false;
+                                _description = false;
+                              }),
                               child: Container(
-                                color: Colors.black.withOpacity(0),
+                                width: double.infinity,
+                                height: double.infinity,
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 1,
+                                    sigmaY: 1,
+                                  ),
+                                  child: Container(
+                                    color: Colors.black.withOpacity(0),
+                                  ),
+                                ),
                               ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: PopupMenuButton(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Icon(Icons.more_horiz),
+                        ),
+                        onSelected: (value) {
+                          /*Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => (value as Widget),
+                            ),
+                          );*/
+                        },
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                          ...popUpItems.map(
+                            (e) => PopupMenuItem(
+                              child: OpenContainer(
+                                closedColor: Theme.of(context).backgroundColor,
+                                openColor: Theme.of(context).backgroundColor,
+                                closedBuilder: (context, openContainer) {
+                                  return Container(
+                                    padding: EdgeInsets.all(20),
+                                    child: Text(e['title']),
+                                  );
+                                },
+                                openBuilder: (context, closeContainer) {
+                                  return e['link'];
+                                },
+                              ),
+                              value: e['link'],
                             ),
                           ),
-                        );
-                      },
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
               blure,

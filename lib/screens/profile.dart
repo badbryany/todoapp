@@ -38,10 +38,13 @@ class _ProfileState extends State<Profile> {
     var _todos = await _dbHelper.getTodos();
     var _tasks = await _dbHelper.getTasks();
 
+    List _friends = await server.getFriends();
+
     setState(() {
       username = prefs.getString('username');
       todoCount = _todos.length;
       taskCount = _tasks.length;
+      friends = _friends.length;
     });
   }
 
@@ -162,6 +165,7 @@ class _ProfileState extends State<Profile> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
+                            friends = (snapshot.data! as List).length;
                             return ListView(
                               children: [
                                 ...((snapshot.data!) as List).map(
@@ -178,9 +182,9 @@ class _ProfileState extends State<Profile> {
                                         width: 30,
                                       ),
                                       title: Text(
-                                        e['friend_2'] == username
-                                            ? e['friend_1']
-                                            : e['friend_2'],
+                                        e['friend_1'] == username
+                                            ? e['friend_2']
+                                            : e['friend_1'],
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -342,6 +346,7 @@ class _NewFriendState extends State<NewFriend> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.data != null) {
+                    print(snapshot.data);
                     return Expanded(
                       child: ListView(
                         children: [
@@ -361,7 +366,9 @@ class _NewFriendState extends State<NewFriend> {
                                 trailing: IconButton(
                                   onPressed: () =>
                                       this.newFriend(e['username']),
-                                  icon: Icon(Icons.person_add_rounded),
+                                  icon: e['friends'] == true
+                                      ? Icon(Icons.how_to_reg)
+                                      : Icon(Icons.person_add_rounded),
                                 ),
                               ),
                             ),

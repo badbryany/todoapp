@@ -1,3 +1,4 @@
+import 'package:TickIt/global/server.dart';
 import 'package:flutter/material.dart';
 
 import './models/todo.dart';
@@ -6,9 +7,17 @@ import 'global/database_helper.dart';
 class TaskCardWidget extends StatefulWidget {
   final String? title;
   final String? desc;
+  final String owner;
+  final String username;
   final int taskId;
 
-  TaskCardWidget({this.title, this.desc, required this.taskId});
+  TaskCardWidget({
+    this.title,
+    this.desc,
+    required this.taskId,
+    required this.owner,
+    required this.username,
+  });
 
   @override
   _TaskCardWidgetState createState() => _TaskCardWidgetState();
@@ -50,6 +59,16 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
     }*/
   }
 
+  Border? border(String username) {
+    if (username != widget.owner) {
+      return Border.all(
+        color: Color(0xff22cc62),
+        width: 2,
+      );
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     List colors = [
@@ -66,6 +85,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
       ),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
+        border: border(widget.username),
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
@@ -91,13 +111,10 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                       color: colors[widget.taskId % colors.length],
                     ),
                   ),
-                  /*Icon(
-                    Icons.topic,
-                    color: colors[widget.taskId % 4],
-                  ),*/
                   SizedBox(width: 20),
                   Text(
-                    widget.title == '' ? "---" : widget.title!,
+                    (widget.title == '' ? "---" : widget.title!) +
+                        '${widget.owner != widget.username ? " - " + widget.owner : ""}',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -144,14 +161,6 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                                 width: whichWidth(snapshot.data.toString()) * 2,
                                 height: 5,
                                 decoration: BoxDecoration(
-                                  /*gradient: LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      Color(0xff63f1b3),
-                                      Color(0xffb8ffe5)
-                                    ],
-                                  ),*/
                                   color: Color(0xff22cc62),
                                   borderRadius: BorderRadius.circular(40),
                                 ),

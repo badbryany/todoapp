@@ -28,8 +28,8 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
       ),
       theme: ThemeData(
-        backgroundColor: Color(0xffdff9f8),
-        scaffoldBackgroundColor: Color(0xffdff9f8),
+        backgroundColor: Color(0xfff9f9f9),
+        scaffoldBackgroundColor: Color(0xfff9f9f9),
         accentColor: Colors.white60, //(0xff8e84cf),
         shadowColor: Colors.white70,
         buttonColor: Color(0xffc083ff),

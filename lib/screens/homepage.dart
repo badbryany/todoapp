@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   final Connectivity _connectivity = Connectivity();
   var foo;
+  String username = '';
 
   void initState() {
     super.initState();
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       });
       if (HomePage.connection) {
         SharedPreferences.getInstance().then((instance) async {
-          String username = instance.getString('username');
+          username = instance.getString('username');
           String password = instance.getString('password');
 
           if (username != null && password != null) {
@@ -289,6 +290,8 @@ class _HomePageState extends State<HomePage> {
       Theme.of(context).dividerColor,
     ];
     DatabaseHelper().cleanToDos();
+    String owner = '';
+    Server().getUsername().then((value) => owner = value);
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -323,7 +326,11 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(),
                     InkWell(
                       onTap: () async {
-                        Task _newTask = Task(title: '', description: '');
+                        Task _newTask = Task(
+                          owner: await Server().getUsername(),
+                          title: '',
+                          description: '',
+                        );
                         await _dbHelper.insertTask(_newTask, true);
                         listKey.currentState!.insertItem(tasks.length);
                         tasks.insert(tasks.length, _newTask);
@@ -375,9 +382,11 @@ class _HomePageState extends State<HomePage> {
                             return Taskpage(
                               color: colors[tasks[index].id % colors.length],
                               task: Task(
-                                  id: tasks[index].id,
-                                  title: tasks[index].title,
-                                  description: tasks[index].description),
+                                id: tasks[index].id,
+                                owner: owner,
+                                title: tasks[index].title,
+                                description: tasks[index].description,
+                              ),
                               notificationSelected: notificationSelected,
                               reloadTasks: getTasks,
                               closeContainer: closeContainer,
@@ -415,6 +424,8 @@ class _HomePageState extends State<HomePage> {
                                                     sizeFactor: animation,
                                                     child: TaskCardWidget(
                                                       taskId: tasks[index].id,
+                                                      owner: tasks[index].owner,
+                                                      username: username,
                                                       title: tasks[index].title,
                                                       desc: tasks[index]
                                                           .description,
@@ -443,6 +454,8 @@ class _HomePageState extends State<HomePage> {
                                 onTap: openContainer,
                                 child: TaskCardWidget(
                                   taskId: tasks[index].id,
+                                  owner: tasks[index].owner,
+                                  username: username,
                                   title: tasks[index].title,
                                   desc: tasks[index].description,
                                 ),

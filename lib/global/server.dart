@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../screens/homepage.dart';
@@ -13,6 +14,11 @@ import '../models/todo.dart';
 
 class Server {
   final String url = 'http://10.0.0.101:3000';
+
+  Future<String> getUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('username');
+  }
 
   // general functions
   Future<bool> checkInternet(BuildContext context, bool changed) async {
@@ -64,22 +70,32 @@ class Server {
     return true;
   }
 
-  Future<List<dynamic>?> compareTasks(
-      List<dynamic> taskMap, List<dynamic>? serverTasks) async {
+  Future<List<dynamic>> compareTasks(
+      List<dynamic> taskMap, List<dynamic> serverTasks) async {
     if (HomePage.loggedIn) {
-      if (taskMap.length > serverTasks!.length ||
+      String username = await this.getUsername();
+      // CHECK IF TASK IS OWN TASK
+      print(serverTasks);
+      if (taskMap.length > serverTasks.length ||
           taskMap.length == serverTasks.length) {
         // more Lists at the Client as at the Server
         int difference = taskMap.length - serverTasks.length;
 
         for (int i = 0; i < difference; i++) {
           Task _newTask = Task(
-              id: taskMap[i + serverTasks.length]['id'],
-              title: taskMap[i + serverTasks.length]['title'],
-              description: taskMap[i + serverTasks.length]['description']);
-          await this.newTask(_newTask, taskMap[i + serverTasks.length]['id']);
-
-          serverTasks.add(taskMap[i + serverTasks.length]);
+            id: taskMap[i + serverTasks.length]['id'],
+            owner: taskMap[i + serverTasks.length]['owner'],
+            title: taskMap[i + serverTasks.length]['title'],
+            description: taskMap[i + serverTasks.length]['description'],
+          );
+          if (taskMap[i + serverTasks.length]['owner'] == username) {
+            await this.newTask(_newTask, taskMap[i + serverTasks.length]['id']);
+            print('mine!!!');
+            serverTasks.add(taskMap[i + serverTasks.length]);
+          }
+          if (taskMap[i + serverTasks.length]['owner'] != username) {
+            print('wixer');
+          }
         }
         for (int j = 0; j < serverTasks.length; j++) {
           if (taskMap[j]['title'] != serverTasks[j]['title']) {
@@ -114,6 +130,7 @@ class Server {
       for (int i = 0; i < serverTasks.length; i++) {
         Task _insertTask = Task(
           id: serverTasks[i]['id'],
+          owner: serverTasks[i]['owner'],
           title: serverTasks[i]['title'],
           description: serverTasks[i]['description'],
         );
@@ -159,7 +176,7 @@ class Server {
   }
 
   // get all data from the server
-  Future<List<dynamic>?> getTasks() async {
+  Future<List<dynamic>> getTasks() async {
     if (HomePage.loggedIn) {
       var res = await Requests.get('${Server().url}/getTasks');
       if (res.content() != 'bad request' || res.content() != 'no session') {
@@ -168,6 +185,7 @@ class Server {
         return [];
       }
     }
+    return [];
   }
 
   Future<List<dynamic>?> getTaskTodos(int? taskId) async {
@@ -272,7 +290,7 @@ class Server {
     }
   }
 
-  //	----------------	FREINDS AND TODOS-LIST SYNCRONISATION	 ----------------	//
+  //	----------------	FRIENDS AND TODOS-LIST SYNCRONISATION	 ----------------	//
 
   Future<List> getPeople() async {
     if (HomePage.loggedIn) {
@@ -329,5 +347,33 @@ class Server {
       );
       //print(res.content());
     }
+  }
+
+  Future<void> addMember(String username, int taskId) async {
+    if (HomePage.loggedIn) {
+      var res = await Requests.post(
+        '$url/inviteFriends',
+        json: {
+          'task_id': taskId,
+          'new_member': username,
+        },
+      );
+      print(res.content());
+    }
+  }
+
+  Future<void> removeMember(String username, int taskId) async {}
+
+  Future<List> getMembers(int taskId) async {
+    if (HomePage.loggedIn) {
+      var res = await Requests.get(
+        '$url/getInvitedFriends',
+        queryParameters: {
+          'task_id': taskId,
+        },
+      );
+      return jsonDecode(res.content());
+    }
+    return [];
   }
 }

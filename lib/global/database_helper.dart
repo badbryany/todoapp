@@ -15,7 +15,7 @@ class DatabaseHelper {
       join(foo, "todo.db"),
       onCreate: (db, version) async {
         await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT)');
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT, owner TEXT)');
         await db.execute(
             'CREATE TABLE todo (id INTEGER PRIMARY KEY, taskId INTEGER, title TEXT, description TEXT, priority INTEGER, reminder TEXT, category TEXT, place TEXT, isDone INTEGER, doneDate TEXT)');
 
@@ -70,14 +70,14 @@ class DatabaseHelper {
 
     var serverTasks = await server.getTasks();
 
-    List<dynamic> newTaskMap =
-        (await server.compareTasks(taskMap, serverTasks)) as List<dynamic>;
-
+    List<dynamic> newTaskMap = await server.compareTasks(taskMap, serverTasks);
     return List.generate(newTaskMap.length, (index) {
       return Task(
-          id: newTaskMap[index]["id"],
-          title: newTaskMap[index]["title"],
-          description: newTaskMap[index]["description"]);
+        id: newTaskMap[index]["id"],
+        owner: newTaskMap[index]["owner"],
+        title: newTaskMap[index]["title"],
+        description: newTaskMap[index]["description"],
+      );
     });
   }
 
@@ -173,7 +173,7 @@ class DatabaseHelper {
       if (todos[i].doneDate != null) {
         Duration difference =
             DateTime.parse(todos[i].doneDate!).difference(DateTime.now());
-        if (difference.inDays >= 1) {
+        if (difference.inHours >= 10) {
           await this.deleteToDo(todos[i].id);
           print('deleted todo\nid: ${todos[i].id}; title: ${todos[i].title}');
         }
